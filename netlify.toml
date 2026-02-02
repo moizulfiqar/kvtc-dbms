@@ -1,15 +1,12 @@
 # Netlify configuration for Next.js (SSR + static assets)
 [build]
   command = "npm run build"
-  publish = ".next"
+  # Don't specify publish directory when using @netlify/plugin-nextjs
 
 # Use Netlify's official Next.js runtime
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Optional: set Node version if needed
-# [build.environment]
-#   NODE_VERSION = "18"
-
-# If you later use next export, change publish to "out"
-# and remove the Next.js plugin.
+# Set Node version for Next.js 15
+[build.environment]
+  NODE_VERSION = "20"
