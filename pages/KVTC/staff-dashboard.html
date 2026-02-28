@@ -495,6 +495,25 @@
             text-decoration: underline;
         }
 
+        .modal-content { position: relative; }
+        .modal-back-btn {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .modal-back-btn:hover { color: #1e3a8a; }
+
+        .edit-form-group { margin-bottom: 16px; }
+        .edit-form-label { display: block; font-size: 14px; color: #374151; margin-bottom: 6px; font-weight: 500; }
+        .edit-form-input { width: 100%; padding: 10px 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 15px; }
+        .edit-form-input:focus { outline: none; border-color: #1e3a8a; }
+
         /* Student Detail Modal Styles */
         .student-detail-modal {
             position: fixed;
@@ -1604,7 +1623,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+    <script src="../../public/KVTC/config.js"></script>
 </head>
 <body>
     <header class="header">
@@ -1617,8 +1636,7 @@
         </div>
         
         <nav class="nav-section">
-            <a href="#" class="nav-link">Home</a>
-            <span class="role-indicator" id="roleDisplay">Role: Admin</span>
+            <span class="role-indicator" id="roleDisplay">Role: —</span>
             <button class="logout-btn" onclick="logout()">
                 <svg class="logout-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M16 17V14H9V10H16V7L21 12L16 17M14 2C15.11 2 16 2.9 16 4V6H14V4H5V20H14V18H16V20C16 21.1 15.11 22 14 22H5C3.9 22 3 21.1 3 20V4C3 2.9 3.9 2 5 2H14Z"/>
@@ -1768,13 +1786,70 @@
                 
                 <div class="modal-actions">
                     <button class="continue-modal-btn" id="continueModalBtn" onclick="proceedToLogin()" disabled>
-                        Continue to Login
+                        Continue
                     </button>
                 </div>
-                
-                <div class="modal-footer">
-                    <p>New user? <a href="signup.html" class="signup-modal-link">Create an account</a></p>
-                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-content">
+                <button type="button" class="modal-back-btn" onclick="hideLoginModal(); showRoleSelectionModal();" title="Back">← Back</button>
+                <h2 class="modal-title">Welcome Back!</h2>
+                <p class="modal-subtitle">Sign in to continue</p>
+                <form id="loginModalForm">
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="loginModalEmail">Email</label>
+                        <input type="email" id="loginModalEmail" class="edit-form-input" required>
+                        <div class="error-message" id="loginModalEmailError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="loginModalPassword">Password</label>
+                        <input type="password" id="loginModalPassword" class="edit-form-input" required>
+                        <div style="text-align:right;margin-top:4px;"><a href="login.html" style="color:#1e3a8a;font-size:13px;">Forgot Password?</a></div>
+                        <div class="error-message" id="loginModalPasswordError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="continue-modal-btn" id="loginModalBtn" style="width:100%;">Sign In</button>
+                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Don't have an account? <a href="#" class="signup-modal-link" onclick="showSignupModal(); return false;">Sign Up</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal-overlay" id="signupModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-content">
+                <button type="button" class="modal-back-btn" onclick="hideSignupModal(); showLoginModal();" title="Back">← Back</button>
+                <h2 class="modal-title">Create an Account</h2>
+                <p class="modal-subtitle">Sign up to get started</p>
+                <form id="signupModalForm">
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="signupModalEmail">Email</label>
+                        <input type="email" id="signupModalEmail" class="edit-form-input" required>
+                        <div class="error-message" id="signupModalEmailError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="signupModalPassword">Password</label>
+                        <input type="password" id="signupModalPassword" class="edit-form-input" required minlength="8" autocomplete="new-password">
+                        <div style="font-size:11px;color:#64748b;margin-top:4px;">At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character</div>
+                        <div class="error-message" id="signupModalPasswordError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="signupModalConfirm">Confirm Password</label>
+                        <input type="password" id="signupModalConfirm" class="edit-form-input" required>
+                        <div class="error-message" id="signupModalConfirmError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="continue-modal-btn" id="signupModalBtn" style="width:100%;">Sign Up</button>
+                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Already have an account? <a href="#" class="signup-modal-link" onclick="showLoginModal(); return false;">Sign In</a></p>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -1816,34 +1891,40 @@
     </div>
 
     <script>
-        const supabase = window.supabase.createClient(
-            window.SUPABASE_CONFIG.url,
-            window.SUPABASE_CONFIG.anonKey
-        );
+        let supabaseClient = null;
+        if (window.supabase && window.SUPABASE_CONFIG) {
+            try {
+                supabaseClient = window.supabase.createClient(
+                    window.SUPABASE_CONFIG.url,
+                    window.SUPABASE_CONFIG.anonKey
+                );
+            } catch (e) {
+                console.error('Supabase init failed on staff dashboard:', e);
+            }
+        }
 
-        // Check authentication status
+        // Check authentication status (prefer userRole from signup/login, fallback to selectedRole)
         const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-        const userRole = localStorage.getItem('selectedRole');
+        const userRole = localStorage.getItem('userRole') || localStorage.getItem('selectedRole');
         const userEmail = localStorage.getItem('userEmail');
 
-        // Initialize page based on authentication
+        // Initialize page based on authentication (role selection is only on home.html)
         document.addEventListener('DOMContentLoaded', function() {
             if (!isAuthenticated) {
-                // Show role selection modal for unauthenticated users
-                showRoleSelectionModal();
-                // Disable search functionality
-                disableFeatures();
-            } else {
-                // Show authenticated user info
-                if (userRole) {
-                    document.getElementById('roleDisplay').textContent = `Role: ${userRole.charAt(0).toUpperCase() + userRole.slice(1)}`;
-                }
-                enableFeatures();
-                // Load dashboard statistics
-                loadDashboardStatistics();
-                // Display last login time
-                displayLastLoginTime();
+                window.location.href = 'home.html';
+                return;
             }
+            const role = userRole || localStorage.getItem('userRole');
+            if (role === 'admin') {
+                window.location.href = 'admin-dashboard.html';
+                return;
+            }
+            if (role) {
+                document.getElementById('roleDisplay').textContent = `Role: ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+            }
+            enableFeatures();
+            loadDashboardStatistics();
+            displayLastLoginTime();
         });
 
         // Disable features for unauthenticated users
@@ -1872,10 +1953,14 @@
 
         // Search functionality with filters
         async function searchStudent() {
+            if (!supabaseClient) {
+                alert('Database not connected. Please try again later.');
+                return;
+            }
             const searchTerm = document.getElementById('searchInput').value.trim();
             const filterGender = document.getElementById('filterGender').value;
             
-            let query = supabase.from('Students').select('*');
+            let query = supabaseClient.from('Students').select('*');
             
             // Apply search term
             if (searchTerm) {
@@ -1964,7 +2049,7 @@
             studentInfoGrid.innerHTML = '';
 
             // Get all student object keys and display them
-            const excludeFields = ['profile_picture_url']; // Fields to exclude from display
+            const excludeFields = ['profile_picture_url', 'id', 'created_at']; // Fields to exclude from the grid
             
             Object.keys(student).forEach(key => {
                 if (!excludeFields.includes(key) && student[key] !== null && student[key] !== undefined) {
@@ -1999,7 +2084,7 @@
             
             try {
                 // Query student_reports table
-                const { data: reports, error } = await supabase
+                const { data: reports, error } = await supabaseClient
                     .from('student_reports')
                     .select('*')
                     .eq('student_id', studentId)
@@ -2030,6 +2115,9 @@
                 const reportsGrid = document.createElement('div');
                 reportsGrid.className = 'reports-grid';
 
+                // Cache reports for openReportFile (avoids querying by huge file_url)
+                window.currentStudentReports = reports;
+
                 reports.forEach(report => {
                     const reportCard = document.createElement('div');
                     reportCard.className = 'report-card';
@@ -2046,7 +2134,7 @@
                             <p><strong>Version:</strong> ${version}</p>
                         </div>
                         ${comments !== 'No comments' ? `<div class="report-comments">${comments}</div>` : ''}
-                        <button onclick="openReportFile('${report.file_url}', '${reportType}')" class="view-report-btn">View Report</button>
+                        <button onclick="openReportFile('${report.id}')" class="view-report-btn">View Report</button>
                     `;
 
                     reportsGrid.appendChild(reportCard);
@@ -2072,44 +2160,32 @@
             document.getElementById('searchInput').value = '';
         }
 
-        // Track report view
-        async function trackReportView(fileUrl, reportType) {
+        // Track report view for admin visibility (silent - does not block if it fails)
+        async function trackReportView(reportId, studentId) {
+            if (!supabaseClient) return;
             try {
-                const userId = localStorage.getItem('userId');
-                const studentId = localStorage.getItem('currentViewingStudentId');
-                
-                if (!userId || !studentId) return;
-                
-                // Find the report by URL
-                const { data: reports } = await supabase
-                    .from('student_reports')
-                    .select('id')
-                    .eq('file_url', fileUrl)
-                    .single();
-                
-                if (reports && reports.id) {
-                    // Insert view tracking
-                    await supabase
-                        .from('report_views')
-                        .insert({
-                            report_id: reports.id,
-                            viewer_id: userId,
-                            student_id: studentId
-                        });
-                }
-            } catch (error) {
-                console.error('Error tracking report view:', error);
-                // Don't block the view on tracking error
-            }
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user?.id) return;
+                await supabaseClient.from('report_views').insert([{
+                    report_id: reportId,
+                    viewer_id: user.id,
+                    student_id: studentId
+                }]);
+            } catch (e) { /* silent - tracking must not block viewing */ }
         }
 
         // Function to open report files in modal viewer (Staff version - view only)
-        async function openReportFile(fileUrl, reportType) {
+        async function openReportFile(reportId) {
             try {
-                console.log('Opening report file:', reportType, 'URL type:', fileUrl.startsWith('data:') ? 'Data URL' : 'Regular URL');
-                
-                // Track this view
-                await trackReportView(fileUrl, reportType);
+                const report = window.currentStudentReports?.find(r => r.id === reportId);
+                if (!report) {
+                    console.error('Report not found:', reportId);
+                    return;
+                }
+                trackReportView(report.id, report.student_id);
+                const fileUrl = report.file_url;
+                const reportType = report.report_type || 'unknown';
+                console.log('Opening report file:', reportType, 'URL type:', fileUrl?.startsWith('data:') ? 'Data URL' : 'Regular URL');
                 
                 // Show modal
                 const modal = document.getElementById('reportViewerModal');
@@ -2405,14 +2481,127 @@
 
         function proceedToLogin() {
             if (selectedModalRole) {
-                // Store selected role
                 localStorage.setItem('selectedRole', selectedModalRole);
-                
-                // Hide modal and redirect to login
                 hideRoleSelectionModal();
-                window.location.href = 'login.html';
+                showLoginModal();
             }
         }
+
+        function showLoginModal() {
+            hideSignupModal();
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+        function hideLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+        function showSignupModal() {
+            if (selectedModalRole) localStorage.setItem('selectedRole', selectedModalRole);
+            hideRoleSelectionModal();
+            hideLoginModal();
+            document.getElementById('signupModal').style.display = 'flex';
+        }
+        function hideSignupModal() {
+            document.getElementById('signupModal').style.display = 'none';
+        }
+
+        document.getElementById('loginModal').addEventListener('click', function(e) {
+            if (e.target === this) hideLoginModal();
+        });
+        document.getElementById('signupModal').addEventListener('click', function(e) {
+            if (e.target === this) hideSignupModal();
+        });
+
+        document.getElementById('loginModalForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginModalEmail').value;
+            const password = document.getElementById('loginModalPassword').value;
+            document.getElementById('loginModalEmailError').style.display = 'none';
+            document.getElementById('loginModalPasswordError').style.display = 'none';
+            if (!supabaseClient) {
+                document.getElementById('loginModalEmailError').textContent = 'Database not connected.';
+                document.getElementById('loginModalEmailError').style.display = 'block';
+                return;
+            }
+            const btn = document.getElementById('loginModalBtn');
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+            try {
+                const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (authError) throw authError;
+                const { data: userProfile, error: profileError } = await supabaseClient.from('User').select('*').eq('id', authData.user.id).single();
+                if (profileError || !userProfile) throw new Error('User profile not found.');
+                const role = userProfile.role;
+                if (role !== (localStorage.getItem('selectedRole') || selectedModalRole)) {
+                    throw new Error('Access denied. Please select the correct role.');
+                }
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userId', authData.user.id);
+                localStorage.setItem('userRole', role);
+                localStorage.setItem('isAuthenticated', 'true');
+                hideLoginModal();
+                window.location.reload();
+            } catch (err) {
+                document.getElementById('loginModalPasswordError').textContent = err.message || 'Invalid email or password.';
+                document.getElementById('loginModalPasswordError').style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+            }
+        });
+
+        document.getElementById('signupModalForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('signupModalEmail').value.trim();
+            const password = document.getElementById('signupModalPassword').value;
+            const confirm = document.getElementById('signupModalConfirm').value;
+            ['signupModalEmailError','signupModalPasswordError','signupModalConfirmError'].forEach(id => {
+                const el = document.getElementById(id);
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+            const role = localStorage.getItem('selectedRole') || selectedModalRole;
+            if (!role) {
+                document.getElementById('signupModalEmailError').textContent = 'Please select a role first.';
+                document.getElementById('signupModalEmailError').style.display = 'block';
+                return;
+            }
+            const emailRe = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+            if (!emailRe.test(email)) {
+                document.getElementById('signupModalEmailError').textContent = 'Please enter a valid email.';
+                document.getElementById('signupModalEmailError').style.display = 'block';
+                return;
+            }
+            if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+                document.getElementById('signupModalPasswordError').textContent = 'Password must be 8+ chars with uppercase, lowercase, number, and special character.';
+                document.getElementById('signupModalPasswordError').style.display = 'block';
+                return;
+            }
+            if (password !== confirm) {
+                document.getElementById('signupModalConfirmError').textContent = 'Passwords do not match.';
+                document.getElementById('signupModalConfirmError').style.display = 'block';
+                return;
+            }
+            const btn = document.getElementById('signupModalBtn');
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+            try {
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password, options: { data: { role } } });
+                if (authError) throw authError;
+                await supabaseClient.from('User').insert([{ id: authData.user.id, role, email }]);
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userId', authData.user.id);
+                localStorage.setItem('userRole', role);
+                localStorage.setItem('isAuthenticated', 'true');
+                hideSignupModal();
+                window.location.reload();
+            } catch (err) {
+                document.getElementById('signupModalEmailError').textContent = err.message || 'Signup failed.';
+                document.getElementById('signupModalEmailError').style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Sign Up';
+            }
+        });
 
         // Enter key support for search
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
@@ -2427,13 +2616,12 @@
                 // Clear user data
                 localStorage.removeItem('selectedRole');
                 localStorage.removeItem('userEmail');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('userId');
                 localStorage.removeItem('isAuthenticated');
-                localStorage.removeItem('loginTime'); // Clear login time on logout
-                
+                localStorage.removeItem('loginTime');
                 console.log('User logged out');
-                
-                // Reload the page to show role selection modal
-                window.location.reload();
+                window.location.href = 'home.html';
             }
         }
 
@@ -2489,7 +2677,7 @@
         // Load total students count
         async function loadTotalStudents() {
             try {
-                const { count, error } = await supabase
+                const { count, error } = await supabaseClient
                     .from('Students')
                     .select('*', { count: 'exact', head: true });
 
@@ -2509,7 +2697,7 @@
         // Load total reports count
         async function loadTotalReports() {
             try {
-                const { count, error } = await supabase
+                const { count, error } = await supabaseClient
                     .from('student_reports')
                     .select('*', { count: 'exact', head: true });
 
@@ -2530,7 +2718,7 @@
         async function loadGenderStatistics() {
             try {
                 // Get female students count
-                const { count: femaleCount, error: femaleError } = await supabase
+                const { count: femaleCount, error: femaleError } = await supabaseClient
                     .from('Students')
                     .select('*', { count: 'exact', head: true })
                     .ilike('gender', 'female');
@@ -2543,7 +2731,7 @@
                 }
 
                 // Get male students count
-                const { count: maleCount, error: maleError } = await supabase
+                const { count: maleCount, error: maleError } = await supabaseClient
                     .from('Students')
                     .select('*', { count: 'exact', head: true })
                     .ilike('gender', 'male');
@@ -2633,7 +2821,7 @@
         async function selectStudentFromRecent(recentStudent) {
             // Fetch fresh student data
             try {
-                const { data: student, error } = await supabase
+                const { data: student, error } = await supabaseClient
                     .from('Students')
                     .select('*')
                     .eq('id', recentStudent.id)

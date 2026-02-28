@@ -6,7 +6,8 @@
     <title>Create an Account - Sign Up</title>
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+    <!-- Use correct relative path so this resolves from /pages/KVTC/signup.html -->
+    <script src="../../public/KVTC/config.js"></script>
     <style>
         * {
             margin: 0;
@@ -112,11 +113,27 @@
             text-decoration: underline;
         }
 
+        .back-link {
+            display: inline-block;
+            color: #64748b;
+            font-size: 14px;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        .back-link:hover { color: #1e3a8a; }
+
         .error-message {
             color: #e74c3c;
             font-size: 14px;
             margin-top: 5px;
             display: none;
+        }
+
+        .password-hint {
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 6px;
+            line-height: 1.4;
         }
 
         .success-message {
@@ -246,9 +263,16 @@
 </head>
 <body>
     <div class="signup-container">
+        <a href="login.html" class="back-link">← Back</a>
         <h1 class="signup-title">Create an Account</h1>
         
         <form id="signupForm">
+            <div class="form-group">
+                <label for="fullName" class="form-label">Full Name</label>
+                <input type="text" id="fullName" name="fullName" class="form-input" required placeholder="Enter your full name">
+                <div class="error-message" id="fullNameError"></div>
+            </div>
+            
             <div class="form-group">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" id="email" name="email" class="form-input" required>
@@ -257,7 +281,8 @@
             
             <div class="form-group">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" name="password" class="form-input" required>
+                <input type="password" id="password" name="password" class="form-input" required minlength="8" autocomplete="new-password">
+                <div class="password-hint" id="passwordHint">At least 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character (!@#$%^&*)</div>
                 <div class="error-message" id="passwordError"></div>
             </div>
             
@@ -281,11 +306,20 @@
     </div>
 
     <script>
-        // Initialize Supabase client
-        const supabase = window.supabase.createClient(
-            window.SUPABASE_CONFIG.url, 
-            window.SUPABASE_CONFIG.anonKey
-        );
+        // Initialize Supabase client (avoid clashing with global `supabase`)
+        let supabaseClient = null;
+        if (window.supabase && window.SUPABASE_CONFIG) {
+            try {
+                supabaseClient = window.supabase.createClient(
+                    window.SUPABASE_CONFIG.url,
+                    window.SUPABASE_CONFIG.anonKey
+                );
+            } catch (e) {
+                console.error('Supabase init failed:', e);
+            }
+        } else {
+            console.warn('Supabase not configured: check that ../../public/KVTC/config.js is served correctly.');
+        }
 
         // Get the selected role from localStorage
         const selectedRole = localStorage.getItem('selectedRole');
@@ -293,13 +327,13 @@
             console.log('User selected role:', selectedRole);
         } else {
             console.log('No role selected, redirecting to role selection');
-            // Redirect to role selection if no role is selected
-            window.location.href = 'role-selection.html';
+            window.location.href = 'home.html';
         }
 
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            const fullName = document.getElementById('fullName').value.trim();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
@@ -312,22 +346,33 @@
             
             let isValid = true;
             
+            if (!fullName) {
+                showError('fullNameError', 'Full name is required');
+                isValid = false;
+            }
+            
             // Validate email
             if (!email) {
                 showError('emailError', 'Email is required');
                 isValid = false;
-            } else if (!isValidEmail(email)) {
-                showError('emailError', 'Please enter a valid email address');
-                isValid = false;
+            } else {
+                const emailErr = validateEmail(email);
+                if (emailErr) {
+                    showError('emailError', emailErr);
+                    isValid = false;
+                }
             }
             
             // Validate password
             if (!password) {
                 showError('passwordError', 'Password is required');
                 isValid = false;
-            } else if (password.length < 6) {
-                showError('passwordError', 'Password must be at least 6 characters long');
-                isValid = false;
+            } else {
+                const pwdErr = validatePassword(password);
+                if (pwdErr) {
+                    showError('passwordError', pwdErr);
+                    isValid = false;
+                }
             }
             
             // Validate confirm password
@@ -344,7 +389,7 @@
                 if (!selectedRole) {
                     showError('emailError', 'Please select a role first. Redirecting to role selection...');
                     setTimeout(() => {
-                        window.location.href = 'role-selection.html';
+                        window.location.href = 'home.html';
                     }, 2000);
                     return;
                 }
@@ -355,11 +400,15 @@
                     return;
                 }
                 
-                await handleSignup(email, password, selectedRole);
+                await handleSignup(fullName, email, password, selectedRole);
             }
         });
 
-        async function handleSignup(email, password, role) {
+        async function handleSignup(fullName, email, password, role) {
+            if (!supabaseClient) {
+                showError('emailError', 'Database not connected. Please try again later.');
+                return;
+            }
             const signupBtn = document.getElementById('signupBtn');
             const btnText = document.getElementById('btnText');
             const loadingText = document.getElementById('loadingText');
@@ -371,7 +420,7 @@
             
             try {
                 // Step 1: Create user in Supabase Auth with role metadata
-                const { data: authData, error: authError } = await supabase.auth.signUp({
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password,
                     options: {
@@ -395,21 +444,28 @@
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     
                     // Check current session before inserting
-                    const { data: session, error: sessionError } = await supabase.auth.getSession();
+                    const { data: session, error: sessionError } = await supabaseClient.auth.getSession();
                     console.log('Current session:', session);
                     console.log('Session error:', sessionError);
                     
                     // Step 2: Insert user data into the User table
-                    console.log('Attempting to insert profile...');
-                    const { data: profileData, error: profileError } = await supabase
+                    console.log('Attempting to insert profile into User table...');
+                    const dbRole = role === 'staff' ? 'employee' : role;
+                    const { data: profileData, error: profileError } = await supabaseClient
                         .from('User')
                         .insert([
                             {
                                 id: authData.user.id,
-                                role: role
+                                role: dbRole,
+                                name: fullName,
+                                email: email
                             }
                         ])
                         .select();
+
+                    // Debug output exactly as you suggested
+                    console.log('PROFILE DATA:', profileData);
+                    console.log('PROFILE ERROR:', profileError);
 
                     if (profileError) {
                         console.error('Error creating user profile:', profileError);
@@ -426,22 +482,18 @@
                     // Success!
                     alert(`Account created successfully!\nRole: ${role}\nEmail: ${email}\nPlease check your email to verify your account.`);
                     
-                    // Store user data locally
                     localStorage.setItem('userEmail', email);
                     localStorage.setItem('userId', authData.user.id);
                     localStorage.setItem('userRole', role);
+                    localStorage.setItem('selectedRole', role);
                     localStorage.setItem('isAuthenticated', 'true');
                     
-                    // Redirect to appropriate dashboard based on role after successful signup
+                    // Redirect based on selected role: admin -> admin dashboard, staff -> staff dashboard
                     if (role === 'admin') {
                         window.location.href = 'admin-dashboard.html';
-                    } else if (role === 'staff') {
+                    } else {
                         window.location.href = 'staff-dashboard.html';
-                    } 
-                    // else {
-                    //     // Fallback to home.html for any other roles
-                    //     window.location.href = 'home.html';
-                    // }
+                    }
                 }
                 
             } catch (error) {
@@ -461,9 +513,23 @@
             errorElement.style.display = 'block';
         }
 
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
+        function validateEmail(email) {
+            const trimmed = email.trim();
+            if (!trimmed) return 'Email is required';
+            // RFC-style: local@domain.tld, no spaces, valid structure
+            const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(trimmed)) return 'Please enter a valid email address (e.g. name@example.com)';
+            if (trimmed.length > 254) return 'Email is too long';
+            return null;
+        }
+
+        function validatePassword(password) {
+            if (password.length < 8) return 'Password must be at least 8 characters long';
+            if (!/[A-Z]/.test(password)) return 'Password must contain at least one uppercase letter';
+            if (!/[a-z]/.test(password)) return 'Password must contain at least one lowercase letter';
+            if (!/[0-9]/.test(password)) return 'Password must contain at least one number';
+            if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) return 'Password must contain at least one special character (!@#$%^&* etc.)';
+            return null;
         }
 
         function isValidRole(role) {

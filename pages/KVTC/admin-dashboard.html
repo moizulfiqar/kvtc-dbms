@@ -491,6 +491,22 @@
             text-decoration: underline;
         }
 
+        .modal-content { position: relative; }
+        .modal-back-btn {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .modal-back-btn:hover {
+            color: #1e3a8a;
+        }
+
         /* Student Detail Modal Styles */
         .student-detail-modal {
             position: fixed;
@@ -662,6 +678,36 @@
         .report-type.pdr { background: #065f46; }
         .report-type.ttb { background: #27ae60; }
         .report-type.ftr { background: #9b59b6; }
+
+        .report-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .report-delete-btn {
+            background: none;
+            border: none;
+            color: #b91c1c;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .report-delete-btn:hover {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .report-delete-btn:focus {
+            outline: none;
+        }
 
         .report-details {
             margin-bottom: 15px;
@@ -1473,6 +1519,44 @@
             background: #7f8c8d;
         }
 
+        /* Delete Confirmation Modal */
+        .delete-confirm-header {
+            background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+        }
+
+        .delete-confirm-message {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 12px 0;
+        }
+
+        .delete-confirm-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0 0 8px 0;
+        }
+
+        .delete-confirm-list {
+            margin: 0 0 24px 0;
+            padding-left: 20px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .delete-confirm-list li {
+            margin-bottom: 4px;
+        }
+
+        .delete-confirm-container .delete-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .delete-confirm-container .delete-btn:hover {
+            background: #b91c1c;
+        }
+
         @media (max-width: 768px) {
             .admin-actions {
                 padding: 20px;
@@ -1794,6 +1878,72 @@
 
         .missing-reports-section {
             border-left-color: #006241;
+        }
+
+        .report-views-section {
+            background: #f0f9ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #1e3a8a;
+            grid-column: 1 / -1;
+            width: 100%;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin: -8px 0 12px 0;
+        }
+
+        .report-views-table-wrap {
+            overflow-x: auto;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .report-views-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .report-views-table th,
+        .report-views-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .report-views-table th {
+            background: #1e3a8a;
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .report-views-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .no-report-views {
+            padding: 24px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .no-report-views .error-text {
+            font-size: 12px;
+            color: #dc2626;
+            margin-top: 8px;
+        }
+
+        .no-report-views code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
         }
 
         .section-title {
@@ -2288,7 +2438,8 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+    <!-- Load shared Supabase config from public/KVTC -->
+    <script src="../../public/KVTC/config.js"></script>
 </head>
 <body>
     <header class="header">
@@ -2301,7 +2452,6 @@
         </div>
         
         <nav class="nav-section">
-            <a href="#" class="nav-link">Home</a>
             <span class="role-indicator" id="roleDisplay">Role: Admin</span>
             <button class="logout-btn" onclick="logout()">
                 <svg class="logout-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -2523,6 +2673,18 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Report View Activity (Who Viewed What) -->
+            <div class="report-views-section">
+                <h4 class="section-title">Report View Activity</h4>
+                <p class="section-subtitle">Staff report views tracked for admin visibility</p>
+                <div class="report-views-container" id="reportViewsContainer">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading report view activity...</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="recent-students-section">
@@ -2558,13 +2720,70 @@
                 
                 <div class="modal-actions">
                     <button class="continue-modal-btn" id="continueModalBtn" onclick="proceedToLogin()" disabled>
-                        Continue to Login
+                        Continue
                     </button>
                 </div>
-                
-                <div class="modal-footer">
-                    <p>New user? <a href="signup.html" class="signup-modal-link">Create an account</a></p>
-                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-content">
+                <button type="button" class="modal-back-btn" onclick="hideLoginModal(); showRoleSelectionModal();" title="Back">← Back</button>
+                <h2 class="modal-title">Welcome Back!</h2>
+                <p class="modal-subtitle">Sign in to continue</p>
+                <form id="loginModalForm">
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="loginModalEmail">Email</label>
+                        <input type="email" id="loginModalEmail" class="edit-form-input" required>
+                        <div class="error-message" id="loginModalEmailError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="loginModalPassword">Password</label>
+                        <input type="password" id="loginModalPassword" class="edit-form-input" required>
+                        <div style="text-align:right;margin-top:4px;"><a href="login.html" style="color:#1e3a8a;font-size:13px;">Forgot Password?</a></div>
+                        <div class="error-message" id="loginModalPasswordError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="continue-modal-btn" id="loginModalBtn" style="width:100%;">Sign In</button>
+                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Don't have an account? <a href="#" class="signup-modal-link" onclick="showSignupModal(); return false;">Sign Up</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal-overlay" id="signupModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-content">
+                <button type="button" class="modal-back-btn" onclick="hideSignupModal(); showLoginModal();" title="Back">← Back</button>
+                <h2 class="modal-title">Create an Account</h2>
+                <p class="modal-subtitle">Sign up to get started</p>
+                <form id="signupModalForm">
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="signupModalEmail">Email</label>
+                        <input type="email" id="signupModalEmail" class="edit-form-input" required>
+                        <div class="error-message" id="signupModalEmailError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="signupModalPassword">Password</label>
+                        <input type="password" id="signupModalPassword" class="edit-form-input" required minlength="8" autocomplete="new-password">
+                        <div style="font-size:11px;color:#64748b;margin-top:4px;">At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character</div>
+                        <div class="error-message" id="signupModalPasswordError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="signupModalConfirm">Confirm Password</label>
+                        <input type="password" id="signupModalConfirm" class="edit-form-input" required>
+                        <div class="error-message" id="signupModalConfirmError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="continue-modal-btn" id="signupModalBtn" style="width:100%;">Sign Up</button>
+                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Already have an account? <a href="#" class="signup-modal-link" onclick="showLoginModal(); return false;">Sign In</a></p>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -2692,6 +2911,47 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="edit-modal" id="deleteConfirmModal">
+        <div class="edit-modal-container delete-confirm-container">
+            <div class="edit-modal-header delete-confirm-header">
+                <h3 class="edit-modal-title">Delete Student</h3>
+                <button class="close-detail-modal" onclick="closeDeleteConfirmModal()">&times;</button>
+            </div>
+            <div class="edit-modal-content">
+                <p class="delete-confirm-message" id="deleteConfirmMessage">Are you sure you want to delete this student?</p>
+                <p class="delete-confirm-subtitle">This action will permanently remove:</p>
+                <ul class="delete-confirm-list">
+                    <li>Student information</li>
+                    <li>All associated reports</li>
+                    <li>This action cannot be undone!</li>
+                </ul>
+                <div class="edit-modal-actions">
+                    <button type="button" class="admin-btn cancel-btn" onclick="closeDeleteConfirmModal()">Cancel</button>
+                    <button type="button" class="admin-btn delete-btn" id="deleteConfirmBtn" onclick="performDeleteStudent()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Report Confirmation Modal -->
+    <div class="edit-modal" id="reportDeleteConfirmModal">
+        <div class="edit-modal-container delete-confirm-container">
+            <div class="edit-modal-header delete-confirm-header">
+                <h3 class="edit-modal-title">Delete Report</h3>
+                <button class="close-detail-modal" onclick="closeReportDeleteConfirmModal()">&times;</button>
+            </div>
+            <div class="edit-modal-content">
+                <p class="delete-confirm-message" id="reportDeleteConfirmMessage">Delete this report?</p>
+                <p class="delete-confirm-subtitle">You can add a new file for this report type by clicking Edit and uploading again.</p>
+                <div class="edit-modal-actions">
+                    <button type="button" class="admin-btn cancel-btn" onclick="closeReportDeleteConfirmModal()">Cancel</button>
+                    <button type="button" class="admin-btn delete-btn" onclick="performDeleteReport()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Add Student Modal -->
     <div class="edit-modal" id="addStudentModal">
         <div class="edit-modal-container">
@@ -2759,34 +3019,55 @@
     </div>
 
     <script>
-        const supabase = window.supabase.createClient(
-            window.SUPABASE_CONFIG.url,
-            window.SUPABASE_CONFIG.anonKey
-        );
+        function logToUI(type, ...args) {
+            if (type === 'error') console.error(...args);
+            else if (type === 'warn') console.warn(...args);
+            else console.log(...args);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize Supabase with a local client variable (avoid clashing with global)
+        let supabaseClient = null;
+        if (window.supabase && window.SUPABASE_CONFIG) {
+            try {
+                supabaseClient = window.supabase.createClient(
+                    window.SUPABASE_CONFIG.url,
+                    window.SUPABASE_CONFIG.anonKey
+                );
+            } catch (e) {
+                logToUI('error','Supabase init failed on admin dashboard:', e);
+            }
+        } else {
+            logToUI('warn','Supabase not configured on admin dashboard. Check ../../public/KVTC/config.js path.');
+        }
 
         // Check authentication status
         const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
         const userRole = localStorage.getItem('selectedRole');
         const userEmail = localStorage.getItem('userEmail');
 
-        // Initialize page based on authentication
+        // Initialize page based on authentication (role selection is only on home.html)
         document.addEventListener('DOMContentLoaded', function() {
             if (!isAuthenticated) {
-                // Show role selection modal for unauthenticated users
-                showRoleSelectionModal();
-                // Disable search functionality
-                disableFeatures();
-            } else {
-                // Show authenticated user info
-                if (userRole) {
-                    document.getElementById('roleDisplay').textContent = `Role: ${userRole.charAt(0).toUpperCase() + userRole.slice(1)}`;
-                }
-                enableFeatures();
-                // Load dashboard statistics
-                loadDashboardStatistics();
-                // Display last login time
-                displayLastLoginTime();
+                window.location.href = 'home.html';
+                return;
             }
+            const role = userRole || localStorage.getItem('userRole');
+            if (role === 'staff' || role === 'employee') {
+                window.location.href = 'staff-dashboard.html';
+                return;
+            }
+            if (role) {
+                document.getElementById('roleDisplay').textContent = `Role: ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+            }
+            enableFeatures();
+            loadDashboardStatistics();
+            displayLastLoginTime();
         });
 
         // Disable features for unauthenticated users
@@ -2815,10 +3096,17 @@
 
         // Search functionality
         async function searchStudent() {
+            if (!supabaseClient) {
+                alert('Database not connected. Please try again later.');
+                return;
+            }
+
             const searchTerm = document.getElementById('searchInput').value.trim();
             const filterGender = document.getElementById('filterGender').value;
+
+            logToUI('info','SearchStudent called with:', { searchTerm, filterGender });
             
-            let query = supabase.from('Students').select('*');
+            let query = supabaseClient.from('Students').select('*');
             
             // Apply search term
             if (searchTerm) {
@@ -2831,6 +3119,8 @@
             }
             
             const { data: students, error } = await query;
+
+            logToUI('info','Students query result:', { students, error });
             
             if (error) {
                 alert('Error fetching students: ' + error.message);
@@ -2899,12 +3189,12 @@
             document.getElementById('studentDetailName').textContent = student.name || 'N/A';
             document.getElementById('studentDetailBasicInfo').textContent = `Student ID: ${student.id}`;
 
-            // Dynamically populate all student fields
+            // Dynamically populate student fields (excluding id and created_at shown elsewhere)
             const studentInfoGrid = document.getElementById('studentInfoGrid');
             studentInfoGrid.innerHTML = '';
 
             // Get all student object keys and display them
-            const excludeFields = ['profile_picture_url']; // Fields to exclude from display
+            const excludeFields = ['profile_picture_url', 'id', 'created_at']; // Fields to exclude from the grid
             
             Object.keys(student).forEach(key => {
                 if (!excludeFields.includes(key) && student[key] !== null && student[key] !== undefined) {
@@ -2935,18 +3225,22 @@
 
         // Load student reports
         async function loadStudentReports(studentId) {
+            if (!supabaseClient) {
+                logToUI('error','Supabase client not initialized - cannot load student reports.');
+                return;
+            }
             const reportsContainer = document.getElementById('reportsContainer');
             
             try {
                 // Query student_reports table
-                const { data: reports, error } = await supabase
+                const { data: reports, error } = await supabaseClient
                     .from('student_reports')
                     .select('*')
                     .eq('student_id', studentId)
                     .order('uploaded_at', { ascending: false });
 
                 if (error) {
-                    console.error('Error fetching reports:', error);
+                    logToUI('error','Error fetching reports:', error);
                     reportsContainer.innerHTML = `
                         <div class="no-reports">
                             <div class="no-reports-icon">⚠️</div>
@@ -2966,6 +3260,9 @@
                     return;
                 }
 
+                // Cache reports for openReportFile (avoids huge file_url in onclick)
+                window.currentStudentReports = reports;
+
                 // Display reports
                 const reportsGrid = document.createElement('div');
                 reportsGrid.className = 'reports-grid';
@@ -2980,13 +3277,16 @@
                     const comments = report.comments || 'No comments';
 
                     reportCard.innerHTML = `
-                        <span class="report-type ${reportType.toLowerCase()}">${reportType.toUpperCase()}</span>
+                        <div class="report-card-header">
+                            <span class="report-type ${reportType.toLowerCase()}">${reportType.toUpperCase()}</span>
+                            <button type="button" onclick="deleteReport('${report.id}', ${report.student_id})" class="report-delete-btn" title="Delete this report (you can upload a new one via Edit)">&#128465;</button>
+                        </div>
                         <div class="report-details">
                             <p><strong>Uploaded:</strong> ${uploadedAt}</p>
                             <p><strong>Version:</strong> ${version}</p>
                         </div>
                         ${comments !== 'No comments' ? `<div class="report-comments">${comments}</div>` : ''}
-                        <button onclick="openReportFile('${report.file_url}', '${reportType}')" class="view-report-btn">View Report</button>
+                        <button onclick="openReportFile('${report.id}')" class="view-report-btn">View Report</button>
                     `;
 
                     reportsGrid.appendChild(reportCard);
@@ -2996,13 +3296,65 @@
                 reportsContainer.appendChild(reportsGrid);
 
             } catch (error) {
-                console.error('Error loading reports:', error);
+                logToUI('error','Error loading reports:', error);
                 reportsContainer.innerHTML = `
                     <div class="no-reports">
                         <div class="no-reports-icon">⚠️</div>
                         <p>Error loading reports. Please try again later.</p>
                     </div>
                 `;
+            }
+        }
+
+        // Pending report delete (used by report delete confirmation modal)
+        let pendingReportDelete = null;
+
+        // Delete a single report – show confirmation modal instead of browser confirm
+        function deleteReport(reportId, studentId) {
+            if (!supabaseClient) {
+                logToUI('error','Supabase client not initialized.');
+                alert('Unable to delete report.');
+                return;
+            }
+            const report = window.currentStudentReports?.find(r => r.id === reportId);
+            const reportType = report ? (report.report_type || 'this report').toUpperCase() : 'This report';
+            pendingReportDelete = { reportId, studentId };
+            document.getElementById('reportDeleteConfirmMessage').textContent =
+                `Delete ${reportType} report?`;
+            document.getElementById('reportDeleteConfirmModal').style.display = 'flex';
+        }
+
+        function closeReportDeleteConfirmModal() {
+            document.getElementById('reportDeleteConfirmModal').style.display = 'none';
+            pendingReportDelete = null;
+        }
+
+        async function performDeleteReport() {
+            if (!pendingReportDelete) return;
+            const { reportId, studentId } = pendingReportDelete;
+            closeReportDeleteConfirmModal();
+            pendingReportDelete = null;
+            try {
+                const { data: deletedRows, error } = await supabaseClient
+                    .from('student_reports')
+                    .delete()
+                    .eq('id', reportId)
+                    .select('id');
+                if (error) {
+                    logToUI('error','Error deleting report:', error);
+                    alert('Failed to delete report: ' + error.message + '\nCode: ' + (error.code || ''));
+                    return;
+                }
+                if (!deletedRows || deletedRows.length === 0) {
+                    logToUI('error','Report delete affected 0 rows. RLS may be blocking or report already removed.');
+                    alert('Delete did not complete. The report was not removed (possible permission/RLS issue). Ensure the student_reports table has an RLS policy allowing admins to DELETE.');
+                    return;
+                }
+                logToUI('info','Report deleted:', reportId);
+                await loadStudentReports(studentId);
+            } catch (err) {
+                logToUI('error','Error deleting report:', err);
+                alert('An error occurred while deleting the report.');
             }
         }
 
@@ -3015,9 +3367,16 @@
         // Function to open report files in modal viewer (Admin version with download)
         let currentReportData = null;
 
-        function openReportFile(fileUrl, reportType) {
+        function openReportFile(reportId) {
             try {
-                console.log('Opening report file:', reportType, 'URL type:', fileUrl.startsWith('data:') ? 'Data URL' : 'Regular URL');
+                const report = window.currentStudentReports?.find(r => r.id === reportId);
+                if (!report) {
+                    logToUI('error','Report not found:', reportId);
+                    return;
+                }
+                const fileUrl = report.file_url;
+                const reportType = report.report_type || 'unknown';
+                logToUI('info','Opening report file:', reportType, 'URL type:', fileUrl?.startsWith('data:') ? 'Data URL' : 'Regular URL');
                 
                 // Store current report data for download
                 currentReportData = {
@@ -3075,7 +3434,7 @@
                             error.style.display = 'block';
                         };
                     } catch (e) {
-                        console.error('Error processing data URL:', e);
+                        logToUI('error','Error processing data URL:', e);
                         loading.style.display = 'none';
                         error.style.display = 'block';
                     }
@@ -3092,9 +3451,9 @@
                     };
                 }
 
-                console.log('Report viewer opened successfully');
+                logToUI('info','Report viewer opened successfully');
             } catch (error) {
-                console.error('Error opening report file:', error);
+                logToUI('error','Error opening report file:', error);
                 alert('Error opening report file. Please try again or contact support.');
             }
         }
@@ -3135,9 +3494,9 @@
                 link.click();
                 document.body.removeChild(link);
                 
-                console.log('Report downloaded successfully');
+                logToUI('info','Report downloaded successfully');
             } catch (error) {
-                console.error('Error downloading report:', error);
+                logToUI('error','Error downloading report:', error);
                 alert('Error downloading report. Please try again or contact support.');
             }
         }
@@ -3187,19 +3546,135 @@
             // Enable continue button
             document.getElementById('continueModalBtn').disabled = false;
             
-            console.log('Selected role in modal:', role);
+            logToUI('info','Selected role in modal:', role);
         }
 
         function proceedToLogin() {
             if (selectedModalRole) {
-                // Store selected role
                 localStorage.setItem('selectedRole', selectedModalRole);
-                
-                // Hide modal and redirect to login
                 hideRoleSelectionModal();
-                window.location.href = 'login.html';
+                showLoginModal();
             }
         }
+
+        function showLoginModal() {
+            hideSignupModal();
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+        function hideLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+        function showSignupModal() {
+            if (selectedModalRole) localStorage.setItem('selectedRole', selectedModalRole);
+            hideRoleSelectionModal();
+            hideLoginModal();
+            document.getElementById('signupModal').style.display = 'flex';
+        }
+        function hideSignupModal() {
+            document.getElementById('signupModal').style.display = 'none';
+        }
+
+        // Login modal: close on overlay click
+        document.getElementById('loginModal').addEventListener('click', function(e) {
+            if (e.target === this) hideLoginModal();
+        });
+        document.getElementById('signupModal').addEventListener('click', function(e) {
+            if (e.target === this) hideSignupModal();
+        });
+
+        // Login modal form submit
+        document.getElementById('loginModalForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginModalEmail').value;
+            const password = document.getElementById('loginModalPassword').value;
+            document.getElementById('loginModalEmailError').style.display = 'none';
+            document.getElementById('loginModalPasswordError').style.display = 'none';
+            if (!supabaseClient) {
+                document.getElementById('loginModalEmailError').textContent = 'Database not connected.';
+                document.getElementById('loginModalEmailError').style.display = 'block';
+                return;
+            }
+            const btn = document.getElementById('loginModalBtn');
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+            try {
+                const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (authError) throw authError;
+                const { data: userProfile, error: profileError } = await supabaseClient.from('User').select('*').eq('id', authData.user.id).single();
+                if (profileError || !userProfile) throw new Error('User profile not found.');
+                const role = userProfile.role;
+                if (role !== (localStorage.getItem('selectedRole') || selectedModalRole)) {
+                    throw new Error('Access denied. Please select the correct role.');
+                }
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userId', authData.user.id);
+                localStorage.setItem('userRole', role);
+                localStorage.setItem('isAuthenticated', 'true');
+                hideLoginModal();
+                window.location.reload();
+            } catch (err) {
+                document.getElementById('loginModalPasswordError').textContent = err.message || 'Invalid email or password.';
+                document.getElementById('loginModalPasswordError').style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+            }
+        });
+
+        // Signup modal form submit
+        document.getElementById('signupModalForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('signupModalEmail').value.trim();
+            const password = document.getElementById('signupModalPassword').value;
+            const confirm = document.getElementById('signupModalConfirm').value;
+            ['signupModalEmailError','signupModalPasswordError','signupModalConfirmError'].forEach(id => {
+                const el = document.getElementById(id);
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+            const role = localStorage.getItem('selectedRole') || selectedModalRole;
+            if (!role) {
+                document.getElementById('signupModalEmailError').textContent = 'Please select a role first.';
+                document.getElementById('signupModalEmailError').style.display = 'block';
+                return;
+            }
+            const emailRe = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+            if (!emailRe.test(email)) {
+                document.getElementById('signupModalEmailError').textContent = 'Please enter a valid email.';
+                document.getElementById('signupModalEmailError').style.display = 'block';
+                return;
+            }
+            if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+                document.getElementById('signupModalPasswordError').textContent = 'Password must be 8+ chars with uppercase, lowercase, number, and special character.';
+                document.getElementById('signupModalPasswordError').style.display = 'block';
+                return;
+            }
+            if (password !== confirm) {
+                document.getElementById('signupModalConfirmError').textContent = 'Passwords do not match.';
+                document.getElementById('signupModalConfirmError').style.display = 'block';
+                return;
+            }
+            const btn = document.getElementById('signupModalBtn');
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+            try {
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password, options: { data: { role } } });
+                if (authError) throw authError;
+                await supabaseClient.from('User').insert([{ id: authData.user.id, role, email }]);
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userId', authData.user.id);
+                localStorage.setItem('userRole', role);
+                localStorage.setItem('isAuthenticated', 'true');
+                hideSignupModal();
+                window.location.reload();
+            } catch (err) {
+                document.getElementById('signupModalEmailError').textContent = err.message || 'Signup failed.';
+                document.getElementById('signupModalEmailError').style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Sign Up';
+            }
+        });
 
         // Enter key support for search
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
@@ -3214,13 +3689,12 @@
                 // Clear user data
                 localStorage.removeItem('selectedRole');
                 localStorage.removeItem('userEmail');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('userId');
                 localStorage.removeItem('isAuthenticated');
-                localStorage.removeItem('loginTime'); // Clear login time on logout
-                
-                console.log('User logged out');
-                
-                // Reload the page to show role selection modal
-                window.location.reload();
+                localStorage.removeItem('loginTime');
+                logToUI('info','User logged out');
+                window.location.href = 'home.html';
             }
         }
 
@@ -3272,6 +3746,7 @@
                 loadTotalStaff(),
                 loadGenderStatistics(),
                 loadStudentsMissingReports(),
+                loadReportViews(),
                 loadActivityLogs(),
                 loadMissingReportsDetail(),
                 loadRecentlyViewedStudents()
@@ -3281,19 +3756,19 @@
         // Load total students count
         async function loadTotalStudents() {
             try {
-                const { count, error } = await supabase
+                const { count, error } = await supabaseClient
                     .from('Students')
                     .select('*', { count: 'exact', head: true });
 
                 if (error) {
-                    console.error('Error fetching total students:', error);
+                    logToUI('error','Error fetching total students:', error);
                     document.getElementById('totalStudents').innerHTML = '<span class="stat-loading">Error</span>';
                     return;
                 }
 
                 document.getElementById('totalStudents').textContent = count || 0;
             } catch (error) {
-                console.error('Error loading total students:', error);
+                logToUI('error','Error loading total students:', error);
                 document.getElementById('totalStudents').innerHTML = '<span class="stat-loading">Error</span>';
             }
         }
@@ -3301,19 +3776,19 @@
         // Load total reports count
         async function loadTotalReports() {
             try {
-                const { count, error } = await supabase
+                const { count, error } = await supabaseClient
                     .from('student_reports')
                     .select('*', { count: 'exact', head: true });
 
                 if (error) {
-                    console.error('Error fetching total reports:', error);
+                    logToUI('error','Error fetching total reports:', error);
                     document.getElementById('totalReports').innerHTML = '<span class="stat-loading">Error</span>';
                     return;
                 }
 
                 document.getElementById('totalReports').textContent = count || 0;
             } catch (error) {
-                console.error('Error loading total reports:', error);
+                logToUI('error','Error loading total reports:', error);
                 document.getElementById('totalReports').innerHTML = '<span class="stat-loading">Error</span>';
             }
         }
@@ -3322,36 +3797,91 @@
         async function loadGenderStatistics() {
             try {
                 // Get female students count
-                const { count: femaleCount, error: femaleError } = await supabase
+                const { count: femaleCount, error: femaleError } = await supabaseClient
                     .from('Students')
                     .select('*', { count: 'exact', head: true })
                     .ilike('gender', 'female');
 
                 if (femaleError) {
-                    console.error('Error fetching female students:', femaleError);
+                    logToUI('error','Error fetching female students:', femaleError);
                     document.getElementById('totalFemaleStudents').innerHTML = '<span class="stat-loading">Error</span>';
                 } else {
                     document.getElementById('totalFemaleStudents').textContent = femaleCount || 0;
                 }
 
                 // Get male students count
-                const { count: maleCount, error: maleError } = await supabase
+                const { count: maleCount, error: maleError } = await supabaseClient
                     .from('Students')
                     .select('*', { count: 'exact', head: true })
                     .ilike('gender', 'male');
 
                 if (maleError) {
-                    console.error('Error fetching male students:', maleError);
+                    logToUI('error','Error fetching male students:', maleError);
                     document.getElementById('totalMaleStudents').innerHTML = '<span class="stat-loading">Error</span>';
                 } else {
                     document.getElementById('totalMaleStudents').textContent = maleCount || 0;
                 }
 
             } catch (error) {
-                console.error('Error loading gender statistics:', error);
+                logToUI('error','Error loading gender statistics:', error);
                 document.getElementById('totalFemaleStudents').innerHTML = '<span class="stat-loading">Error</span>';
                 document.getElementById('totalMaleStudents').innerHTML = '<span class="stat-loading">Error</span>';
             }
+        }
+
+        // Load report view activity (who viewed what)
+        async function loadReportViews() {
+            const container = document.getElementById('reportViewsContainer');
+            if (!container) return;
+            if (!supabaseClient) {
+                container.innerHTML = '<div class="no-report-views"><p>Database not connected.</p></div>';
+                return;
+            }
+            try {
+                const { data: views, error } = await supabaseClient
+                    .from('report_views_with_details')
+                    .select('*')
+                    .order('viewed_at', { ascending: false })
+                    .limit(50);
+                if (error) {
+                    const fallback = await supabaseClient.from('report_views').select('*').order('viewed_at', { ascending: false }).limit(50);
+                    if (fallback.error) {
+                        const msg = (fallback.error.message || '').toLowerCase();
+                        const needsMigration = msg.includes('does not exist') || msg.includes('relation');
+                        container.innerHTML = needsMigration
+                            ? `<div class="no-report-views"><p><strong>Report view tracking is not set up yet.</strong></p><p>Run the SQL in <code>pages/KVTC/report_views_migration.sql</code> in your Supabase SQL Editor to create the table.</p><p>After that, staff report views will appear here.</p></div>`
+                            : `<div class="no-report-views"><p>No report views yet.</p><p class="error-text">${escapeHtml(fallback.error.message)}</p></div>`;
+                        return;
+                    }
+                    renderReportViews(fallback.data || [], container, true);
+                    return;
+                }
+                renderReportViews(views || [], container, false);
+            } catch (e) {
+                container.innerHTML = '<div class="no-report-views"><p>Error loading report views.</p></div>';
+            }
+        }
+
+        function renderReportViews(views, container, minimal) {
+            if (!views || views.length === 0) {
+                container.innerHTML = '<div class="no-report-views"><p>No report views yet. When staff view reports, they will appear here.</p></div>';
+                return;
+            }
+            const rows = views.map(v => {
+                const reportType = minimal ? (v.report_id ? 'Report' : '—') : ((v.report_type || '—') + '').toUpperCase();
+                const studentName = minimal ? (v.student_id || '—') : (v.student_name || '—');
+                const time = v.viewed_at ? new Date(v.viewed_at).toLocaleString() : '—';
+                const viewer = (v.viewer_name && String(v.viewer_name).trim()) ? v.viewer_name : (v.viewer_id ? String(v.viewer_id).slice(0, 8) + '…' : '—');
+                return `<tr><td>${reportType}</td><td>${escapeHtml(String(studentName))}</td><td>${escapeHtml(String(viewer || '—'))}</td><td>${time}</td></tr>`;
+            }).join('');
+            container.innerHTML = `
+                <div class="report-views-table-wrap">
+                    <table class="report-views-table">
+                        <thead><tr><th>Report</th><th>Student</th><th>Viewed By</th><th>When</th></tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            `;
         }
 
         // Load and display recently viewed students
@@ -3419,16 +3949,21 @@
 
         // Select student from recent list
         async function selectStudentFromRecent(recentStudent) {
-            // Fetch fresh student data
-            try {
-                const { data: student, error } = await supabase
+                // Fetch fresh student data
+                try {
+                    if (!supabaseClient) {
+                        logToUI('error','Supabase client not initialized - cannot fetch recent student.');
+                        return;
+                    }
+
+                    const { data: student, error } = await supabaseClient
                     .from('Students')
                     .select('*')
                     .eq('id', recentStudent.id)
                     .single();
 
                 if (error) {
-                    console.error('Error fetching student:', error);
+                    logToUI('error','Error fetching student:', error);
                     alert('Error loading student details');
                     return;
                 }
@@ -3437,7 +3972,7 @@
                     selectStudent(student);
                 }
             } catch (error) {
-                console.error('Error fetching student:', error);
+                logToUI('error','Error fetching student:', error);
                 alert('Error loading student details');
             }
         }
@@ -3511,49 +4046,60 @@
             toggleAdminActions();
         };
         
-        // Delete student function
-        async function deleteStudent() {
+        // Delete student function - shows confirmation modal
+        function deleteStudent() {
             if (!currentEditingStudent) {
                 alert('No student selected for deletion');
                 return;
             }
-            
-            const confirmDelete = confirm(
-                `Are you sure you want to delete ${currentEditingStudent.name}?\n\n` +
-                `This action will permanently remove:\n` +
-                `• Student information\n` +
-                `• All associated reports\n` +
-                `• This action cannot be undone!`
-            );
-            
-            if (!confirmDelete) return;
-            
+            document.getElementById('deleteConfirmMessage').textContent =
+                `Are you sure you want to delete ${currentEditingStudent.name}?`;
+            document.getElementById('deleteConfirmModal').style.display = 'flex';
+        }
+
+        function closeDeleteConfirmModal() {
+            document.getElementById('deleteConfirmModal').style.display = 'none';
+        }
+
+        async function performDeleteStudent() {
+            if (!currentEditingStudent) return;
+            closeDeleteConfirmModal();
+            const studentId = currentEditingStudent.id;
+            const studentName = currentEditingStudent.name;
             try {
                 // Delete student reports first (due to foreign key constraint)
-                const { error: reportsError } = await supabase
+                const { error: reportsError } = await supabaseClient
                     .from('student_reports')
                     .delete()
-                    .eq('student_id', currentEditingStudent.id);
+                    .eq('student_id', studentId);
                 
                 if (reportsError) {
-                    console.error('Error deleting student reports:', reportsError);
+                    logToUI('error','Error deleting student reports:', reportsError);
                     alert('Error deleting student reports: ' + reportsError.message);
                     return;
                 }
                 
-                // Delete student record
-                const { error: studentError } = await supabase
+                // Delete student record - use .select() to verify rows were actually deleted
+                const { data: deletedRows, error: studentError } = await supabaseClient
                     .from('Students')
                     .delete()
-                    .eq('id', currentEditingStudent.id);
+                    .eq('id', studentId)
+                    .select('id');
                 
                 if (studentError) {
-                    console.error('Error deleting student:', studentError);
+                    logToUI('error','Error deleting student:', studentError);
                     alert('Error deleting student: ' + studentError.message);
                     return;
                 }
                 
-                alert(`${currentEditingStudent.name} has been successfully deleted from the system.`);
+                // RLS may block delete silently - check if any rows were actually deleted
+                if (!deletedRows || deletedRows.length === 0) {
+                    logToUI('error','Delete blocked: no rows affected. Check RLS policies on Students table.');
+                    alert('Delete failed: The student could not be removed. This is usually caused by missing Row Level Security (RLS) policies. Run the SQL in pages/KVTC/students_rls_policies.sql in your Supabase SQL Editor.');
+                    return;
+                }
+                
+                logToUI('info', `${studentName} has been successfully deleted from the system.`);
                 
                 // Close modal and refresh data
                 closeStudentDetailModal();
@@ -3561,7 +4107,7 @@
                 clearResults(); // Clear search results
                 
             } catch (error) {
-                console.error('Error in delete operation:', error);
+                logToUI('error','Error in delete operation:', error);
                 alert('An unexpected error occurred while deleting the student.');
             }
         }
@@ -3619,7 +4165,7 @@
                 reader.onload = function(e) {
                     // Store the data URL for later use
                     input.dataset.dataUrl = e.target.result;
-                    console.log('Profile picture converted to data URL');
+                    logToUI('info','Profile picture converted to data URL');
                 };
                 reader.readAsDataURL(file);
                 
@@ -3642,12 +4188,12 @@
                     input.dataset.dataUrl = e.target.result;
                     input.dataset.fileName = file.name;
                     input.dataset.fileType = file.type;
-                    console.log('Report file converted to data URL:', file.name);
+                    logToUI('info','Report file converted to data URL:', file.name);
                 };
                 reader.readAsDataURL(file);
             }
             
-            console.log(`${type} file selected:`, file.name);
+            logToUI('info',`${type} file selected:`, file.name);
         }
         
         // Handle edit form submission
@@ -3674,12 +4220,12 @@
             // Validate that we have a valid student ID
             if (!studentId) {
                 alert('Invalid student data. Please close the modal and try again.');
-                console.error('Student ID is missing:', currentEditingStudent);
+                logToUI('error','Student ID is missing:', currentEditingStudent);
                 return;
             }
             
             try {
-                console.log('Starting student update for ID:', studentId, 'Name:', studentName);
+                logToUI('info','Starting student update for ID:', studentId, 'Name:', studentName);
                 
                 // Prepare student data update
                 const studentUpdates = {};
@@ -3699,7 +4245,7 @@
                 const profilePictureFile = profilePictureInput.files[0];
                 
                 if (profilePictureFile) {
-                    console.log('Profile picture selected:', profilePictureFile.name);
+                    logToUI('info','Profile picture selected:', profilePictureFile.name);
                     
                     // Validate file size (max 5MB)
                     if (profilePictureFile.size > 5 * 1024 * 1024) {
@@ -3719,11 +4265,11 @@
                         const dataUrl = await new Promise((resolve, reject) => {
                             const reader = new FileReader();
                             reader.onload = e => {
-                                console.log('Profile picture successfully converted to data URL');
+                                logToUI('info','Profile picture successfully converted to data URL');
                                 resolve(e.target.result);
                             };
                             reader.onerror = e => {
-                                console.error('Error reading profile picture:', e);
+                                logToUI('error','Error reading profile picture:', e);
                                 reject(e);
                             };
                             reader.readAsDataURL(profilePictureFile);
@@ -3731,40 +4277,40 @@
                         
                         if (dataUrl) {
                             studentUpdates.profile_picture_url = dataUrl;
-                            console.log('Profile picture data URL created, length:', dataUrl.length);
+                            logToUI('info','Profile picture data URL created, length:', dataUrl.length);
                         } else {
-                            console.error('Failed to create data URL for profile picture');
+                            logToUI('error','Failed to create data URL for profile picture');
                             alert('Error processing the profile picture. Please try again.');
                             return;
                         }
                     } catch (error) {
-                        console.error('Error converting profile picture to data URL:', error);
+                        logToUI('error','Error converting profile picture to data URL:', error);
                         alert('Error processing the profile picture. Please try again.');
                         return;
                     }
                 }
                 
-                console.log('Student updates to apply:', studentUpdates);
+                logToUI('info','Student updates to apply:', studentUpdates);
                 
                 // Update student information if there are changes
                 if (Object.keys(studentUpdates).length > 0) {
-                    console.log('Updating student with ID:', studentId);
+                    logToUI('info','Updating student with ID:', studentId);
                     
-                    const { data: updatedData, error: updateError } = await supabase
+                    const { data: updatedData, error: updateError } = await supabaseClient
                         .from('Students')
                         .update(studentUpdates)
                         .eq('id', studentId)
                         .select();
                     
                     if (updateError) {
-                        console.error('Supabase update error:', updateError);
+                        logToUI('error','Supabase update error:', updateError);
                         alert('Error updating student information: ' + updateError.message + '\nCode: ' + (updateError.code || 'Unknown'));
                         return;
                     }
                     
-                    console.log('Student updated successfully:', updatedData);
+                    logToUI('info','Student updated successfully:', updatedData);
                 } else {
-                    console.log('No student data changes to update');
+                    logToUI('info','No student data changes to update');
                 }
                 
                 // Handle new report upload
@@ -3776,6 +4322,7 @@
                 let existingReports = null;
                 let processedReportType = null;
                 let reportWasProcessed = false;
+                let reportResult = null;
                 
                 // Validate report upload - if report type is selected, file must be provided
                 if (reportType && !reportFile) {
@@ -3789,8 +4336,8 @@
                 }
                 
                 if (reportType && reportFile) {
-                    console.log('Adding new report:', reportType, 'File:', reportFile.name);
-                    console.log('Report type selected from dropdown:', reportType);
+                    logToUI('info','Adding new report:', reportType, 'File:', reportFile.name);
+                    logToUI('info','Report type selected from dropdown:', reportType);
                     
                     // Validate file size (max 5MB)
                     if (reportFile.size > 5 * 1024 * 1024) {
@@ -3817,29 +4364,29 @@
                         processedReportType = reportType.split(' - ')[0].trim();
                     }
                     
-                    console.log('Processed report type for database:', processedReportType);
+                    logToUI('info','Processed report type for database:', processedReportType);
                     
                     // Get the report file input element
                     const reportFileInput = document.getElementById('editReportFile');
                     let fileUrl = null;
                     
                     // Convert file to data URL for storage
-                    console.log('Converting report file to data URL...');
+                    logToUI('info','Converting report file to data URL...');
                     try {
                         fileUrl = await new Promise((resolve, reject) => {
                             const reader = new FileReader();
                             reader.onload = e => {
-                                console.log('File successfully converted to data URL');
+                                logToUI('info','File successfully converted to data URL');
                                 resolve(e.target.result);
                             };
                             reader.onerror = e => {
-                                console.error('Error reading file:', e);
+                                logToUI('error','Error reading file:', e);
                                 reject(e);
                             };
                             reader.readAsDataURL(reportFile);
                         });
                     } catch (error) {
-                        console.error('Error converting report file to data URL:', error);
+                        logToUI('error','Error converting report file to data URL:', error);
                         alert('Error processing the report file. Please try again.');
                         return;
                     }
@@ -3849,34 +4396,35 @@
                         return;
                     }
                     
-                    console.log('Data URL created successfully, length:', fileUrl.length);
+                    logToUI('info','Data URL created successfully, length:', fileUrl.length);
                     
                     // First, check if a report of this type already exists for this student
-                    console.log('Checking for existing report of type:', processedReportType);
-                    const { data: existingReportsData, error: checkError } = await supabase
+                    logToUI('info','Checking for existing report of type:', processedReportType);
+                    const { data: existingReportsData, error: checkError } = await supabaseClient
                         .from('student_reports')
                         .select('id')
                         .eq('student_id', studentId)
                         .eq('report_type', processedReportType);
                     
                     if (checkError) {
-                        console.error('Error checking existing reports:', checkError);
+                        logToUI('error','Error checking existing reports:', checkError);
                         // Continue with insert if check fails
                     } else {
                         existingReports = existingReportsData;
                     }
                     
-                    // Create report data with proper file URL
+                    const { data: { user } } = await supabaseClient.auth.getUser();
                     const reportData = {
                         student_id: studentId,
                         report_type: processedReportType,
-                        file_url: fileUrl, // Use data URL
+                        file_url: fileUrl,
                         comments: reportComments || null,
                         uploaded_at: new Date().toISOString(),
-                        version: '1.0'
+                        version: '1.0',
+                        ...(user?.id && { uploaded_by: user.id })
                     };
                     
-                    console.log('Report data prepared:', {
+                    logToUI('info','Report data prepared:', {
                         student_id: reportData.student_id,
                         report_type: reportData.report_type,
                         file_url: `[DATA URL - ${reportFile.name} - ${Math.round(fileUrl.length/1024)}KB]`,
@@ -3885,13 +4433,12 @@
                         version: reportData.version
                     });
                     
-                    let reportResult = null;
                     let reportError = null;
                     
                     // If existing report found, update it; otherwise insert new one
                     if (existingReports && existingReports.length > 0) {
-                        console.log('Updating existing report with ID:', existingReports[0].id);
-                        const { data: updateResult, error: updateError } = await supabase
+                        logToUI('info','Updating existing report with ID:', existingReports[0].id);
+                        const { data: updateResult, error: updateError } = await supabaseClient
                             .from('student_reports')
                             .update(reportData)
                             .eq('id', existingReports[0].id)
@@ -3900,8 +4447,8 @@
                         reportResult = updateResult;
                         reportError = updateError;
                     } else {
-                        console.log('Creating new report');
-                        const { data: insertResult, error: insertError } = await supabase
+                        logToUI('info','Creating new report');
+                        const { data: insertResult, error: insertError } = await supabaseClient
                             .from('student_reports')
                             .insert([reportData])
                             .select();
@@ -3911,8 +4458,8 @@
                     }
                     
                     if (reportError) {
-                        console.error('Error uploading report:', reportError);
-                        console.error('Report error details:', {
+                        logToUI('error','Error uploading report:', reportError);
+                        logToUI('error','Report error details:', {
                             code: reportError.code,
                             message: reportError.message,
                             details: reportError.details,
@@ -3921,7 +4468,7 @@
                         
                         // If it's a constraint violation, try alternative formats
                         if (reportError.code === '23514') {
-                            console.log('Constraint violation detected. Trying alternative report type formats...');
+                            logToUI('info','Constraint violation detected. Trying alternative report type formats...');
                             
                             // Try different formats
                             const alternativeFormats = [
@@ -3931,7 +4478,7 @@
                             ];
                             
                             for (const altType of alternativeFormats) {
-                                console.log('Trying alternative format:', altType);
+                                logToUI('info','Trying alternative format:', altType);
                                 
                                 const altReportData = {
                                     ...reportData,
@@ -3943,7 +4490,7 @@
                                 let altError = null;
                                 
                                 if (existingReports && existingReports.length > 0) {
-                                    const { data: altUpdateResult, error: altUpdateError } = await supabase
+                                    const { data: altUpdateResult, error: altUpdateError } = await supabaseClient
                                         .from('student_reports')
                                         .update(altReportData)
                                         .eq('id', existingReports[0].id)
@@ -3951,7 +4498,7 @@
                                     altResult = altUpdateResult;
                                     altError = altUpdateError;
                                 } else {
-                                    const { data: altInsertResult, error: altInsertError } = await supabase
+                                    const { data: altInsertResult, error: altInsertError } = await supabaseClient
                                         .from('student_reports')
                                         .insert([altReportData])
                                         .select();
@@ -3960,14 +4507,14 @@
                                 }
                                 
                                 if (!altError) {
-                                    console.log('Success with alternative format:', altType);
-                                    console.log('Report uploaded successfully:', altResult);
+                                    logToUI('info','Success with alternative format:', altType);
+                                    logToUI('info','Report uploaded successfully:', altResult);
                                     reportResult = altResult;
                                     reportError = null;
                                     reportWasProcessed = true;
                                     break;
                                 } else {
-                                    console.log('Alternative format failed:', altType, altError.message);
+                                    logToUI('info','Alternative format failed:', altType, altError.message);
                                 }
                             }
                         }
@@ -3976,9 +4523,9 @@
                             alert('Student updated successfully, but there was an error uploading the report: ' + reportError.message + '\nCode: ' + (reportError.code || 'Unknown') + '\n\nThe report type "' + processedReportType + '" may not be allowed. Check console for details.');
                         }
                     } else {
-                        console.log('Report uploaded successfully:', reportResult);
+                        logToUI('info','Report uploaded successfully:', reportResult);
                         const action = existingReports && existingReports.length > 0 ? 'updated' : 'created';
-                        console.log(`Report ${action} successfully for student ${studentId}`);
+                        logToUI('info',`Report ${action} successfully for student ${studentId}`);
                         reportWasProcessed = true;
                     }
                 }
@@ -4006,31 +4553,70 @@
                 closeEditModal();
                 
                 // Refresh the student detail modal with updated data
-                console.log('Fetching updated student data for ID:', studentId);
-                const { data: updatedStudent, error: fetchError } = await supabase
+                logToUI('info','Fetching updated student data for ID:', studentId);
+                const { data: updatedStudent, error: fetchError } = await supabaseClient
                     .from('Students')
                     .select('*')
                     .eq('id', studentId)
                     .single();
                 
                 if (fetchError) {
-                    console.error('Error fetching updated student:', fetchError);
+                    logToUI('error','Error fetching updated student:', fetchError);
                     // Still show the modal with old data if fetch fails
                     if (currentEditingStudent) {
                         selectStudent(currentEditingStudent);
                     }
                 } else if (updatedStudent) {
-                    console.log('Updated student data fetched:', updatedStudent);
+                    logToUI('info','Updated student data fetched:', updatedStudent);
                     currentEditingStudent = updatedStudent; // Update the current student reference
                     selectStudent(updatedStudent);
+                    // If we updated an existing report, patch in-memory list with the update response
+                    // so "View Report" shows the new file (avoids stale/cached read after update)
+                    if (reportWasProcessed && reportResult && reportResult.length > 0 && existingReports && existingReports.length > 0) {
+                        const updatedReport = reportResult[0];
+                        if (window.currentStudentReports) {
+                            const idx = window.currentStudentReports.findIndex(r => r.id === updatedReport.id);
+                            if (idx !== -1) {
+                                window.currentStudentReports[idx] = updatedReport;
+                                const reportsContainer = document.getElementById('reportsContainer');
+                                if (reportsContainer) {
+                                    const reportsGrid = document.createElement('div');
+                                    reportsGrid.className = 'reports-grid';
+                                    window.currentStudentReports.forEach(report => {
+                                        const reportCard = document.createElement('div');
+                                        reportCard.className = 'report-card';
+                                        const reportType = report.report_type || 'unknown';
+                                        const uploadedAt = report.uploaded_at ? new Date(report.uploaded_at).toLocaleDateString() : 'N/A';
+                                        const version = report.version || 'N/A';
+                                        const comments = report.comments || 'No comments';
+                                        reportCard.innerHTML = `
+                                            <div class="report-card-header">
+                                                <span class="report-type ${reportType.toLowerCase()}">${reportType.toUpperCase()}</span>
+                                                <button type="button" onclick="deleteReport('${report.id}', ${report.student_id})" class="report-delete-btn" title="Delete this report (you can upload a new one via Edit)">&#128465;</button>
+                                            </div>
+                                            <div class="report-details">
+                                                <p><strong>Uploaded:</strong> ${uploadedAt}</p>
+                                                <p><strong>Version:</strong> ${version}</p>
+                                            </div>
+                                            ${comments !== 'No comments' ? `<div class="report-comments">${comments}</div>` : ''}
+                                            <button onclick="openReportFile('${report.id}')" class="view-report-btn">View Report</button>
+                                        `;
+                                        reportsGrid.appendChild(reportCard);
+                                    });
+                                    reportsContainer.innerHTML = '';
+                                    reportsContainer.appendChild(reportsGrid);
+                                }
+                            }
+                        }
+                    }
                 }
                 
                 // Refresh statistics
                 loadDashboardStatistics();
                 
             } catch (error) {
-                console.error('Unexpected error in edit operation:', error);
-                console.error('Error details:', {
+                logToUI('error','Unexpected error in edit operation:', error);
+                logToUI('error','Error details:', {
                     message: error.message,
                     stack: error.stack,
                     name: error.name,
@@ -4051,54 +4637,54 @@
         // Debug function to check database schema and student structure
         async function debugDatabaseInfo() {
             try {
-                console.log('=== DATABASE DEBUG INFO ===');
+                logToUI('info','=== DATABASE DEBUG INFO ===');
                 
                 // Check if we can query the Students table
-                const { data: students, error: studentsError } = await supabase
+                const { data: students, error: studentsError } = await supabaseClient
                     .from('Students')
                     .select('*')
                     .limit(1);
                 
                 if (studentsError) {
-                    console.error('Error querying Students table:', studentsError);
+                    logToUI('error','Error querying Students table:', studentsError);
                 } else {
-                    console.log('Students table sample:', students);
+                    logToUI('info','Students table sample:', students);
                     if (students && students.length > 0) {
-                        console.log('Student columns:', Object.keys(students[0]));
+                        logToUI('info','Student columns:', Object.keys(students[0]));
                     }
                 }
                 
                 // Check if we can query the student_reports table
-                const { data: reports, error: reportsError } = await supabase
+                const { data: reports, error: reportsError } = await supabaseClient
                     .from('student_reports')
                     .select('*')
                     .limit(1);
                 
                 if (reportsError) {
-                    console.error('Error querying student_reports table:', reportsError);
-                    console.error('Reports table error details:', {
+                    logToUI('error','Error querying student_reports table:', reportsError);
+                    logToUI('error','Reports table error details:', {
                         code: reportsError.code,
                         message: reportsError.message,
                         details: reportsError.details,
                         hint: reportsError.hint
                     });
                 } else {
-                    console.log('student_reports table sample:', reports);
+                    logToUI('info','student_reports table sample:', reports);
                     if (reports && reports.length > 0) {
-                        console.log('Reports columns:', Object.keys(reports[0]));
-                        console.log('Sample report data types:', reports[0]);
+                        logToUI('info','Reports columns:', Object.keys(reports[0]));
+                        logToUI('info','Sample report data types:', reports[0]);
                     } else {
-                        console.log('student_reports table is empty');
+                        logToUI('info','student_reports table is empty');
                         
                         // Try to get table structure by attempting an insert with minimal data
-                        console.log('Attempting to determine table structure...');
-                        const { error: structureError } = await supabase
+                        logToUI('info','Attempting to determine table structure...');
+                        const { error: structureError } = await supabaseClient
                             .from('student_reports')
                             .insert([{ student_id: 999999 }]) // This will fail but show us required fields
                             .select();
                         
                         if (structureError) {
-                            console.log('Table structure error (expected):', {
+                            logToUI('info','Table structure error (expected):', {
                                 code: structureError.code,
                                 message: structureError.message,
                                 details: structureError.details,
@@ -4108,12 +4694,12 @@
                     }
                 }
                 
-                console.log('Current editing student:', currentEditingStudent);
-                console.log('User email:', userEmail);
-                console.log('=== END DEBUG INFO ===');
+                logToUI('info','Current editing student:', currentEditingStudent);
+                logToUI('info','User email:', userEmail);
+                logToUI('info','=== END DEBUG INFO ===');
                 
             } catch (error) {
-                console.error('Error in debug function:', error);
+                logToUI('error','Error in debug function:', error);
             }
         }
         
@@ -4152,7 +4738,7 @@
             e.preventDefault();
             
             try {
-                console.log('Starting new student creation...');
+                logToUI('info','Starting new student creation...');
                 
                 // Validate required fields
                 const nameValue = document.getElementById('addName').value.trim();
@@ -4170,7 +4756,7 @@
                     return;
                 }
                 
-                console.log('Creating student:', nameValue, 'Gender:', genderValue);
+                logToUI('info','Creating student:', nameValue, 'Gender:', genderValue);
                 
                 // Prepare student data
                 const studentData = {
@@ -4183,7 +4769,7 @@
                 const profilePictureFile = profilePictureInput.files[0];
                 
                 if (profilePictureFile) {
-                    console.log('Profile picture selected:', profilePictureFile.name);
+                    logToUI('info','Profile picture selected:', profilePictureFile.name);
                     
                     // Validate file size (max 5MB)
                     if (profilePictureFile.size > 5 * 1024 * 1024) {
@@ -4203,11 +4789,11 @@
                         const dataUrl = await new Promise((resolve, reject) => {
                             const reader = new FileReader();
                             reader.onload = e => {
-                                console.log('Profile picture successfully converted to data URL');
+                                logToUI('info','Profile picture successfully converted to data URL');
                                 resolve(e.target.result);
                             };
                             reader.onerror = e => {
-                                console.error('Error reading profile picture:', e);
+                                logToUI('error','Error reading profile picture:', e);
                                 reject(e);
                             };
                             reader.readAsDataURL(profilePictureFile);
@@ -4215,14 +4801,14 @@
                         
                         if (dataUrl) {
                             studentData.profile_picture_url = dataUrl;
-                            console.log('Profile picture data URL created, length:', dataUrl.length);
+                            logToUI('info','Profile picture data URL created, length:', dataUrl.length);
                         } else {
-                            console.error('Failed to create data URL for profile picture');
+                            logToUI('error','Failed to create data URL for profile picture');
                             alert('Error processing the profile picture. Please try again.');
                             return;
                         }
                     } catch (error) {
-                        console.error('Error converting profile picture to data URL:', error);
+                        logToUI('error','Error converting profile picture to data URL:', error);
                         alert('Error processing the profile picture. Please try again.');
                         return;
                     }
@@ -4231,33 +4817,33 @@
                     studentData.profile_picture_url = 'no pfp.jpeg';
                 }
                 
-                console.log('Student data prepared:', {
+                logToUI('info','Student data prepared:', {
                     name: studentData.name,
                     gender: studentData.gender,
                     profile_picture_url: studentData.profile_picture_url === 'no pfp.jpeg' ? 'Default Avatar' : `[DATA URL - ${Math.round(studentData.profile_picture_url.length/1024)}KB]`
                 });
                 
                 // Insert new student into database
-                console.log('Inserting student into database...');
-                const { data: insertedStudent, error: insertError } = await supabase
+                logToUI('info','Inserting student into database...');
+                const { data: insertedStudent, error: insertError } = await supabaseClient
                     .from('Students')
                     .insert([studentData])
                     .select();
                 
                 if (insertError) {
-                    console.error('Supabase insert error:', insertError);
+                    logToUI('error','Supabase insert error:', insertError);
                     alert('Error creating student: ' + insertError.message + '\nCode: ' + (insertError.code || 'Unknown'));
                     return;
                 }
                 
                 if (!insertedStudent || insertedStudent.length === 0) {
-                    console.error('No student data returned after insert');
+                    logToUI('error','No student data returned after insert');
                     alert('Error: Student was not created properly. Please try again.');
                     return;
                 }
                 
                 const newStudent = insertedStudent[0];
-                console.log('Student created successfully:', newStudent);
+                logToUI('info','Student created successfully:', newStudent);
                 
                 // Handle report upload if provided
                 const reportType = document.getElementById('addReportType').value;
@@ -4279,7 +4865,7 @@
                 }
                 
                 if (reportType && reportFile) {
-                    console.log('Adding initial report:', reportType, 'File:', reportFile.name);
+                    logToUI('info','Adding initial report:', reportType, 'File:', reportFile.name);
                     
                     // Validate file size (max 5MB)
                     if (reportFile.size > 5 * 1024 * 1024) {
@@ -4304,26 +4890,26 @@
                         processedReportType = reportType.split(' - ')[0].trim();
                     }
                     
-                    console.log('Processed report type for database:', processedReportType);
+                    logToUI('info','Processed report type for database:', processedReportType);
                     
                     // Convert file to data URL for storage
-                    console.log('Converting report file to data URL...');
+                    logToUI('info','Converting report file to data URL...');
                     let fileUrl = null;
                     try {
                         fileUrl = await new Promise((resolve, reject) => {
                             const reader = new FileReader();
                             reader.onload = e => {
-                                console.log('File successfully converted to data URL');
+                                logToUI('info','File successfully converted to data URL');
                                 resolve(e.target.result);
                             };
                             reader.onerror = e => {
-                                console.error('Error reading file:', e);
+                                logToUI('error','Error reading file:', e);
                                 reject(e);
                             };
                             reader.readAsDataURL(reportFile);
                         });
                     } catch (error) {
-                        console.error('Error converting report file to data URL:', error);
+                        logToUI('error','Error converting report file to data URL:', error);
                         alert('Error processing the report file. Please try again.');
                         return;
                     }
@@ -4333,19 +4919,20 @@
                         return;
                     }
                     
-                    console.log('Data URL created successfully, length:', fileUrl.length);
+                    logToUI('info','Data URL created successfully, length:', fileUrl.length);
                     
-                    // Create report data
+                    const { data: { user } } = await supabaseClient.auth.getUser();
                     const reportData = {
                         student_id: newStudent.id,
                         report_type: processedReportType,
                         file_url: fileUrl,
                         comments: reportComments || null,
                         uploaded_at: new Date().toISOString(),
-                        version: '1.0'
+                        version: '1.0',
+                        ...(user?.id && { uploaded_by: user.id })
                     };
                     
-                    console.log('Report data prepared:', {
+                    logToUI('info','Report data prepared:', {
                         student_id: reportData.student_id,
                         report_type: reportData.report_type,
                         file_url: `[DATA URL - ${reportFile.name} - ${Math.round(fileUrl.length/1024)}KB]`,
@@ -4355,15 +4942,15 @@
                     });
                     
                     // Insert report
-                    console.log('Creating initial report...');
-                    const { data: reportResult, error: reportError } = await supabase
+                    logToUI('info','Creating initial report...');
+                const { data: reportResult, error: reportError } = await supabaseClient
                         .from('student_reports')
                         .insert([reportData])
                         .select();
                     
                     if (reportError) {
-                        console.error('Error uploading initial report:', reportError);
-                        console.error('Report error details:', {
+                        logToUI('error','Error uploading initial report:', reportError);
+                        logToUI('error','Report error details:', {
                             code: reportError.code,
                             message: reportError.message,
                             details: reportError.details,
@@ -4372,7 +4959,7 @@
                         
                         // If it's a constraint violation, try alternative formats
                         if (reportError.code === '23514') {
-                            console.log('Constraint violation detected. Trying alternative report type formats...');
+                            logToUI('info','Constraint violation detected. Trying alternative report type formats...');
                             
                             const alternativeFormats = [
                                 processedReportType.toLowerCase(),
@@ -4381,25 +4968,25 @@
                             ];
                             
                             for (const altType of alternativeFormats) {
-                                console.log('Trying alternative format:', altType);
+                                logToUI('info','Trying alternative format:', altType);
                                 
                                 const altReportData = {
                                     ...reportData,
                                     report_type: altType
                                 };
                                 
-                                const { data: altResult, error: altError } = await supabase
+                                const { data: altResult, error: altError } = await supabaseClient
                                     .from('student_reports')
                                     .insert([altReportData])
                                     .select();
                                 
                                 if (!altError) {
-                                    console.log('Success with alternative format:', altType);
-                                    console.log('Report uploaded successfully:', altResult);
+                                    logToUI('info','Success with alternative format:', altType);
+                                    logToUI('info','Report uploaded successfully:', altResult);
                                     reportWasProcessed = true;
                                     break;
                                 } else {
-                                    console.log('Alternative format failed:', altType, altError.message);
+                                    logToUI('info','Alternative format failed:', altType, altError.message);
                                 }
                             }
                         }
@@ -4408,7 +4995,7 @@
                             alert('Student created successfully, but there was an error uploading the initial report: ' + reportError.message + '\nYou can add reports later from the student detail page.');
                         }
                     } else {
-                        console.log('Initial report uploaded successfully:', reportResult);
+                        logToUI('info','Initial report uploaded successfully:', reportResult);
                         reportWasProcessed = true;
                     }
                 }
@@ -4434,8 +5021,8 @@
                 clearResults();
                 
             } catch (error) {
-                console.error('Unexpected error in add student operation:', error);
-                console.error('Error details:', {
+                logToUI('error','Unexpected error in add student operation:', error);
+                logToUI('error','Error details:', {
                     message: error.message,
                     stack: error.stack,
                     name: error.name
@@ -4451,49 +5038,58 @@
             }
         });
 
-        // Load total staff count
+        // Load total staff count (requires RLS policy allowing admins to read User table)
         async function loadTotalStaff() {
+            const el = document.getElementById('totalStaff');
+            if (!supabaseClient) {
+                if (el) el.textContent = '—';
+                return;
+            }
             try {
-                const { count, error } = await supabase
+                const { count, error } = await supabaseClient
                     .from('User')
-                    .select('*', { count: 'exact', head: true })
+                    .select('id', { count: 'exact', head: true })
                     .eq('role', 'staff');
 
                 if (error) {
-                    console.error('Error fetching total staff:', error);
-                    document.getElementById('totalStaff').innerHTML = '<span class="stat-loading">Error</span>';
+                    logToUI('warn','Total staff count unavailable:', error.message || error);
+                    if (el) el.textContent = '—';
                     return;
                 }
 
-                document.getElementById('totalStaff').textContent = count || 0;
-            } catch (error) {
-                console.error('Error loading total staff:', error);
-                document.getElementById('totalStaff').innerHTML = '<span class="stat-loading">Error</span>';
+                if (el) el.textContent = count ?? 0;
+            } catch (err) {
+                logToUI('warn','Total staff count failed:', err);
+                if (el) el.textContent = '—';
             }
         }
 
         // Load students missing reports count
         async function loadStudentsMissingReports() {
+            if (!supabaseClient) {
+                logToUI('error','Supabase client not initialized - cannot load students missing reports.');
+                return;
+            }
             try {
                 // Get all students
-                const { data: allStudents, error: studentsError } = await supabase
+                const { data: allStudents, error: studentsError } = await supabaseClient
                     .from('Students')
                     .select('id');
 
                 if (studentsError) {
-                    console.error('Error fetching students for missing reports:', studentsError);
+                    logToUI('error','Error fetching students for missing reports:', studentsError);
                     document.getElementById('studentsMissingReports').innerHTML = '<span class="stat-loading">Error</span>';
                     return;
                 }
 
                 // Get all reports with student_id and report_type
-                const { data: allReports, error: reportsError } = await supabase
+                const { data: allReports, error: reportsError } = await supabaseClient
                     .from('student_reports')
                     .select('student_id, report_type')
                     .not('student_id', 'is', null);
 
                 if (reportsError) {
-                    console.error('Error fetching reports:', reportsError);
+                    logToUI('error','Error fetching reports:', reportsError);
                     document.getElementById('studentsMissingReports').innerHTML = '<span class="stat-loading">Error</span>';
                     return;
                 }
@@ -4519,7 +5115,7 @@
 
                 document.getElementById('studentsMissingReports').textContent = studentsMissingReports;
             } catch (error) {
-                console.error('Error loading students missing reports:', error);
+                logToUI('error','Error loading students missing reports:', error);
                 document.getElementById('studentsMissingReports').innerHTML = '<span class="stat-loading">Error</span>';
             }
         }
@@ -4527,10 +5123,16 @@
         // Load activity logs
         async function loadActivityLogs() {
             const activityContainer = document.getElementById('activityLogsContainer');
+
+            if (!supabaseClient) {
+                logToUI('error','Supabase client not initialized - cannot load activity logs.');
+                activityContainer.innerHTML = '<div class="no-activity">Database not connected</div>';
+                return;
+            }
             
             try {
                 // Get recent reports with student information
-                const { data: recentReports, error } = await supabase
+                const { data: recentReports, error } = await supabaseClient
                     .from('student_reports')
                     .select(`
                         id,
@@ -4538,13 +5140,14 @@
                         uploaded_at,
                         comments,
                         student_id,
-                        Students!inner(name)
+                        Students!inner(name),
+                        User!uploaded_by(name)
                     `)
                     .order('uploaded_at', { ascending: false })
                     .limit(10);
 
                 if (error) {
-                    console.error('Error fetching activity logs:', error);
+                    logToUI('error','Error fetching activity logs:', error);
                     activityContainer.innerHTML = '<div class="no-activity">Error loading activity logs</div>';
                     return;
                 }
@@ -4561,14 +5164,13 @@
                     const reportTypeUpper = (report.report_type || 'Report').toUpperCase();
                     const studentName = report.Students?.name || 'Unknown Student';
                     
-                    // Extract uploader name from comments if available
-                    let uploaderName = 'User Unknown';
-                    if (report.comments) {
+                    // Get uploader name from User table, fallback to comments, then 'User Unknown'
+                    let uploaderName = report.User?.name || null;
+                    if (!uploaderName && report.comments) {
                         const match = report.comments.match(/uploaded by ([^.]+)/i);
-                        if (match) {
-                            uploaderName = match[1].trim();
-                        }
+                        if (match) uploaderName = match[1].trim();
                     }
+                    if (!uploaderName) uploaderName = 'User Unknown';
 
                     activityHtml += `
                         <div class="activity-log-item">
@@ -4585,7 +5187,7 @@
                 activityContainer.innerHTML = activityHtml;
 
             } catch (error) {
-                console.error('Error loading activity logs:', error);
+                logToUI('error','Error loading activity logs:', error);
                 activityContainer.innerHTML = '<div class="no-activity">Error loading activity logs</div>';
             }
         }
@@ -4593,27 +5195,33 @@
         // Load detailed missing reports information
         async function loadMissingReportsDetail() {
             const missingContainer = document.getElementById('missingReportsContainer');
+
+            if (!supabaseClient) {
+                logToUI('error','Supabase client not initialized - cannot load missing reports detail.');
+                missingContainer.innerHTML = '<div class="no-missing-reports">Database not connected</div>';
+                return;
+            }
             
             try {
                 // Get all students
-                const { data: allStudents, error: studentsError } = await supabase
+                const { data: allStudents, error: studentsError } = await supabaseClient
                     .from('Students')
                     .select('id, name, profile_picture_url');
 
                 if (studentsError) {
-                    console.error('Error fetching students for missing reports detail:', studentsError);
+                    logToUI('error','Error fetching students for missing reports detail:', studentsError);
                     missingContainer.innerHTML = '<div class="no-missing-reports">Error loading students</div>';
                     return;
                 }
 
                 // Get all reports with student_id and report_type
-                const { data: allReports, error: reportsError } = await supabase
+                const { data: allReports, error: reportsError } = await supabaseClient
                     .from('student_reports')
                     .select('student_id, report_type')
                     .not('student_id', 'is', null);
 
                 if (reportsError) {
-                    console.error('Error fetching reports:', reportsError);
+                    logToUI('error','Error fetching reports:', reportsError);
                     missingContainer.innerHTML = '<div class="no-missing-reports">Error loading reports</div>';
                     return;
                 }
@@ -4674,7 +5282,7 @@
                 missingContainer.innerHTML = missingHtml;
 
             } catch (error) {
-                console.error('Error loading missing reports detail:', error);
+                logToUI('error','Error loading missing reports detail:', error);
                 missingContainer.innerHTML = '<div class="no-missing-reports">Error loading missing reports</div>';
             }
         }
@@ -4682,14 +5290,14 @@
         // Helper function to search and select a student by name
         async function searchAndSelectStudent(studentName) {
             try {
-                const { data: students, error } = await supabase
+                const { data: students, error } = await supabaseClient
                     .from('Students')
                     .select('*')
                     .ilike('name', `%${studentName}%`)
                     .limit(1);
 
                 if (error) {
-                    console.error('Error searching for student:', error);
+                    logToUI('error','Error searching for student:', error);
                     return;
                 }
 
@@ -4697,7 +5305,7 @@
                     selectStudent(students[0]);
                 }
             } catch (error) {
-                console.error('Error in searchAndSelectStudent:', error);
+                logToUI('error','Error in searchAndSelectStudent:', error);
             }
         }
     </script>

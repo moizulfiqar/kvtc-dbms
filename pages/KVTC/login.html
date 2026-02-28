@@ -6,7 +6,8 @@
     <title>Welcome Back - Login</title>
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+    <!-- Load shared Supabase config from public/KVTC -->
+    <script src="../../public/KVTC/config.js"></script>
     <style>
         * {
             margin: 0;
@@ -112,6 +113,15 @@
         .signup-link:hover {
             text-decoration: underline;
         }
+
+        .back-link {
+            display: inline-block;
+            color: #64748b;
+            font-size: 14px;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        .back-link:hover { color: #1e3a8a; }
 
         .progress-dots {
             display: flex;
@@ -347,7 +357,8 @@
     </style>
 </head>
 <body>
-    <div class="login-container">
+    <div class="login-container" id="loginContainer">
+        <a href="home.html" class="back-link">← Back</a>
         <h1 class="login-title">Welcome Back!</h1>
         
         <form id="loginForm">
@@ -385,21 +396,62 @@
         </div>
     </div>
 
-    <script>
-        // Initialize Supabase client
-        const supabase = window.supabase.createClient(
-            window.SUPABASE_CONFIG.url, 
-            window.SUPABASE_CONFIG.anonKey
-        );
+    <!-- Set new password (shown when user arrives from reset link) -->
+    <div class="login-container" id="setNewPasswordContainer" style="display: none;">
+        <h1 class="login-title">Set new password</h1>
+        <p style="color: #555; margin-bottom: 24px; font-size: 15px;">Enter your new password below.</p>
+        <form id="setNewPasswordForm">
+            <div class="form-group">
+                <label for="newPassword" class="form-label">New password</label>
+                <input type="password" id="newPassword" class="form-input" required minlength="6" placeholder="At least 6 characters">
+                <div class="error-message" id="newPasswordError"></div>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword" class="form-label">Confirm password</label>
+                <input type="password" id="confirmPassword" class="form-input" required minlength="6" placeholder="Re-enter password">
+                <div class="error-message" id="confirmPasswordError"></div>
+            </div>
+            <button type="submit" class="sign-in-btn" id="setPasswordBtn">
+                <span id="setPasswordBtnText">Update password</span>
+                <span id="setPasswordLoading" class="loading" style="display: none;">Updating...</span>
+            </button>
+        </form>
+    </div>
 
-        // Get the selected role from localStorage
+    <script>
+        // Initialize Supabase client (avoid clashing with global `supabase`)
+        let supabaseClient = null;
+        if (window.supabase && window.SUPABASE_CONFIG) {
+            try {
+                supabaseClient = window.supabase.createClient(
+                    window.SUPABASE_CONFIG.url,
+                    window.SUPABASE_CONFIG.anonKey
+                );
+            } catch (e) {
+                console.error('Supabase init failed on login page:', e);
+            }
+        } else {
+            console.warn('Supabase not configured on login page. Check ../../public/KVTC/config.js path.');
+        }
+
+        // Check if user landed here from password reset link (hash has type=recovery)
+        function isRecoveryMode() {
+            const hash = window.location.hash || '';
+            return hash.includes('type=recovery');
+        }
+
+        // Get the selected role from localStorage (skip redirect if we're in password recovery)
         const selectedRole = localStorage.getItem('selectedRole');
-        if (selectedRole) {
+        if (isRecoveryMode()) {
+            // User clicked "Reset Password" in email — show set-new-password form, don't redirect
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('setNewPasswordContainer').style.display = 'block';
+            });
+        } else if (selectedRole) {
             console.log('User selected role:', selectedRole);
         } else {
-            console.log('No role selected, redirecting to role selection');
-            // Redirect to role selection if no role is selected
-            window.location.href = 'role-selection.html';
+            window.location.href = 'home.html';
         }
 
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -417,9 +469,9 @@
             if (email && password) {
                 // Check if role is selected
                 if (!selectedRole) {
-                    showError('emailError', 'Please select a role first. Redirecting to role selection...');
+                    showError('emailError', 'Please select a role first. Redirecting to home...');
                     setTimeout(() => {
-                        window.location.href = 'role-selection.html';
+                        window.location.href = 'home.html';
                     }, 2000);
                     return;
                 }
@@ -437,6 +489,10 @@
         });
 
         async function handleLogin(email, password) {
+            if (!supabaseClient) {
+                showError('emailError', 'Database not connected. Please try again later.');
+                return;
+            }
             const loginBtn = document.getElementById('loginBtn');
             const btnText = document.getElementById('btnText');
             const loadingText = document.getElementById('loadingText');
@@ -448,7 +504,7 @@
             
             try {
                 // Sign in with Supabase
-                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
@@ -459,7 +515,7 @@
 
                 if (authData.user) {
                     // Get user profile from User table
-                    const { data: userProfile, error: profileError } = await supabase
+                    const { data: userProfile, error: profileError } = await supabaseClient
                         .from('User')
                         .select('*')
                         .eq('id', authData.user.id)
@@ -474,31 +530,28 @@
                         throw new Error('User profile not found. Please contact administrator.');
                     }
 
-                    // SECURITY CHECK: Validate that selected role matches stored role
+                    // SECURITY CHECK: Validate that selected role matches stored role (employee = staff)
                     const actualRole = userProfile.role;
-                    if (selectedRole !== actualRole) {
+                    const roleMatches = (selectedRole === actualRole) || (selectedRole === 'staff' && actualRole === 'employee');
+                    if (!roleMatches) {
                         throw new Error(`Access denied. You are registered as ${actualRole}, but selected ${selectedRole}. Please select the correct role.`);
                     }
 
                     // Success! User's selected role matches their stored role
                     alert(`Login successful!\nWelcome ${email}\nRole: ${actualRole}`);
                     
-                    // Store user data locally (use actual role from database)
                     localStorage.setItem('userEmail', email);
                     localStorage.setItem('userId', authData.user.id);
                     localStorage.setItem('userRole', actualRole);
+                    localStorage.setItem('selectedRole', selectedRole);
                     localStorage.setItem('isAuthenticated', 'true');
                     
-                    // Redirect to appropriate dashboard based on role
-                    if (actualRole === 'admin') {
+                    // Redirect based on selected role: admin -> admin dashboard, staff -> staff dashboard
+                    if (selectedRole === 'admin') {
                         window.location.href = 'admin-dashboard.html';
-                    } else if (actualRole === 'staff') {
+                    } else {
                         window.location.href = 'staff-dashboard.html';
-                    } 
-                    // else {
-                    //     // Fallback to home.html for any other roles
-                    //     window.location.href = 'home.html';
-                    // }
+                    }
                 }
                 
             } catch (error) {
@@ -546,35 +599,96 @@
             document.getElementById('resetSuccess').style.display = 'none';
         }
 
-        document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('resetEmail').value;
-            const errorElement = document.getElementById('resetEmailError');
-            const successElement = document.getElementById('resetSuccess');
-            
-            // Clear previous messages
-            errorElement.style.display = 'none';
-            successElement.style.display = 'none';
-            
-            try {
-                const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin + '/pages/KVTC/login.html'
-                });
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('forgotPasswordForm');
+            if (!form) return;
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
                 
-                if (error) {
-                    throw error;
+                const email = document.getElementById('resetEmail').value;
+                const errorElement = document.getElementById('resetEmailError');
+                const successElement = document.getElementById('resetSuccess');
+                
+                // Clear previous messages
+                errorElement.style.display = 'none';
+                successElement.style.display = 'none';
+                
+                try {
+                    if (!supabaseClient) {
+                        throw new Error('Database not connected. Please try again later.');
+                    }
+
+                    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                        redirectTo: window.location.origin + '/pages/KVTC/login.html'
+                    });
+                    
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    successElement.style.display = 'block';
+                    setTimeout(() => {
+                        closeForgotPasswordModal();
+                    }, 3000);
+                    
+                } catch (error) {
+                    errorElement.textContent = error.message || 'Error sending reset email. Please try again.';
+                    errorElement.style.display = 'block';
                 }
-                
-                successElement.style.display = 'block';
-                setTimeout(() => {
-                    closeForgotPasswordModal();
-                }, 3000);
-                
-            } catch (error) {
-                errorElement.textContent = error.message || 'Error sending reset email. Please try again.';
-                errorElement.style.display = 'block';
-            }
+            });
+        });
+
+        // Set new password (when user lands from reset link with type=recovery in hash)
+        document.addEventListener('DOMContentLoaded', function() {
+            const setForm = document.getElementById('setNewPasswordForm');
+            if (!setForm) return;
+            setForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const errorEl = document.getElementById('newPasswordError');
+                const confirmErrorEl = document.getElementById('confirmPasswordError');
+                errorEl.style.display = 'none';
+                errorEl.textContent = '';
+                confirmErrorEl.style.display = 'none';
+                confirmErrorEl.textContent = '';
+
+                if (newPassword.length < 6) {
+                    errorEl.textContent = 'Password must be at least 6 characters.';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+                if (newPassword !== confirmPassword) {
+                    confirmErrorEl.textContent = 'Passwords do not match.';
+                    confirmErrorEl.style.display = 'block';
+                    return;
+                }
+
+                const btn = document.getElementById('setPasswordBtn');
+                const btnText = document.getElementById('setPasswordBtnText');
+                const loadingText = document.getElementById('setPasswordLoading');
+                btn.disabled = true;
+                btnText.style.display = 'none';
+                loadingText.style.display = 'inline';
+
+                try {
+                    if (!supabaseClient) throw new Error('Database not connected.');
+                    const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+                    if (error) throw error;
+                    // Success: clear hash and show login again
+                    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                    document.getElementById('setNewPasswordContainer').style.display = 'none';
+                    document.getElementById('loginContainer').style.display = 'block';
+                    alert('Password updated. You can now sign in with your new password.');
+                } catch (err) {
+                    errorEl.textContent = err.message || 'Failed to update password. Try again.';
+                    errorEl.style.display = 'block';
+                } finally {
+                    btn.disabled = false;
+                    btnText.style.display = 'inline';
+                    loadingText.style.display = 'none';
+                }
+            });
         });
     </script>
     

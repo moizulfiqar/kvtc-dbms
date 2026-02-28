@@ -40,3 +40,22 @@ USING (
     )
 );
 
+-- View for admin dashboard: who viewed what (joins report_views with report type, student name, and viewer name)
+CREATE OR REPLACE VIEW report_views_with_details AS
+SELECT 
+    rv.id,
+    rv.report_id,
+    rv.viewer_id,
+    rv.student_id,
+    rv.viewed_at,
+    sr.report_type,
+    s.name AS student_name,
+    u.name AS viewer_name
+FROM report_views rv
+LEFT JOIN student_reports sr ON rv.report_id = sr.id
+LEFT JOIN students s ON rv.student_id = s.id
+LEFT JOIN "User" u ON rv.viewer_id = u.id;
+
+-- If you get "relation students does not exist", your table may be "Students" (case-sensitive).
+-- Run instead: CREATE OR REPLACE VIEW report_views_with_details AS ... LEFT JOIN "Students" s ON rv.student_id = s.id;
+

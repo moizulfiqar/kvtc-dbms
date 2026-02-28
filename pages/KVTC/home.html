@@ -502,6 +502,24 @@
             text-decoration: underline;
         }
 
+        .modal-content { position: relative; }
+        .edit-form-group { margin-bottom: 18px; }
+        .edit-form-label { display: block; font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 6px; }
+        .edit-form-input { width: 100%; padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 16px; }
+        .edit-form-input:focus { outline: none; border-color: #1e3a8a; }
+        .modal-back-btn {
+            position: absolute;
+            top: 0;
+            left: -12px;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .modal-back-btn:hover { color: #1e3a8a; }
+
         /* Responsive Design */
         @media (max-width: 1024px) {
             .content-wrapper {
@@ -725,7 +743,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+    <script src="../../public/KVTC/config.js"></script>
 </head>
 <body>
     <header class="header">
@@ -837,11 +855,87 @@
         </div>
     </div>
 
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-content">
+                <button type="button" class="modal-back-btn" onclick="hideLoginModal(); showRoleSelectionModal();" title="Back">← Back</button>
+                <h2 class="modal-title">Welcome Back!</h2>
+                <p class="modal-subtitle">Sign in to continue</p>
+                <form id="loginModalForm">
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="loginModalEmail">Email</label>
+                        <input type="email" id="loginModalEmail" class="edit-form-input" required>
+                        <div class="error-message" id="loginModalEmailError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="loginModalPassword">Password</label>
+                        <input type="password" id="loginModalPassword" class="edit-form-input" required>
+                        <div style="text-align:right;margin-top:4px;"><a href="login.html" style="color:#1e3a8a;font-size:13px;">Forgot Password?</a></div>
+                        <div class="error-message" id="loginModalPasswordError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="continue-modal-btn" id="loginModalBtn" style="width:100%;">Sign In</button>
+                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Don't have an account? <a href="#" class="signup-modal-link" onclick="showSignupModal(); return false;">Sign Up</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal-overlay" id="signupModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-content">
+                <button type="button" class="modal-back-btn" onclick="hideSignupModal(); showLoginModal();" title="Back">← Back</button>
+                <h2 class="modal-title">Create an Account</h2>
+                <p class="modal-subtitle">Sign up to get started</p>
+                <form id="signupModalForm">
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="signupModalFullName">Full Name</label>
+                        <input type="text" id="signupModalFullName" class="edit-form-input" required placeholder="Enter your full name">
+                        <div class="error-message" id="signupModalFullNameError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="signupModalEmail">Email</label>
+                        <input type="email" id="signupModalEmail" class="edit-form-input" required>
+                        <div class="error-message" id="signupModalEmailError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="signupModalPassword">Password</label>
+                        <input type="password" id="signupModalPassword" class="edit-form-input" required minlength="8" autocomplete="new-password">
+                        <div style="font-size:11px;color:#64748b;margin-top:4px;">At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character</div>
+                        <div class="error-message" id="signupModalPasswordError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label" for="signupModalConfirm">Confirm Password</label>
+                        <input type="password" id="signupModalConfirm" class="edit-form-input" required>
+                        <div class="error-message" id="signupModalConfirmError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="continue-modal-btn" id="signupModalBtn" style="width:100%;">Sign Up</button>
+                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Already have an account? <a href="#" class="signup-modal-link" onclick="showLoginModal(); return false;">Sign In</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const supabase = window.supabase.createClient(
-            window.SUPABASE_CONFIG.url,
-            window.SUPABASE_CONFIG.anonKey
-        );
+        // Initialize Supabase only if config loaded (don't throw or rest of script won't run)
+        let supabaseClient = null;
+        if (window.supabase && window.SUPABASE_CONFIG) {
+            try {
+                supabaseClient = window.supabase.createClient(
+                    window.SUPABASE_CONFIG.url,
+                    window.SUPABASE_CONFIG.anonKey
+                );
+            } catch (e) {
+                console.warn('Supabase init failed:', e);
+            }
+        } else {
+            console.warn('Supabase not configured: ensure config.js loads and is served correctly.');
+        }
 
         // Check authentication status
         const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
@@ -890,11 +984,15 @@
 
         // Search functionality
         async function searchStudent() {
+            if (!supabaseClient) {
+                alert('Database not connected. Check that config is loaded and you are serving the app (e.g. from project root).');
+                return;
+            }
             const searchTerm = document.getElementById('searchInput').value.trim();
 
             if (searchTerm) {
                 // Query Supabase Students table by name only
-                let { data: students, error } = await supabase
+                let { data: students, error } = await supabaseClient
                     .from('Students')
                     .select('*')
                     .ilike('name', `%${searchTerm}%`);
@@ -995,12 +1093,150 @@
 
         function proceedToLogin() {
             if (selectedModalRole) {
-                // Store selected role
                 localStorage.setItem('selectedRole', selectedModalRole);
-                
-                // Hide modal and redirect to login
                 hideRoleSelectionModal();
-                window.location.href = 'login.html';
+                showLoginModal();
+            }
+        }
+
+        function showLoginModal() {
+            hideSignupModal();
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+        function hideLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+        function showSignupModal() {
+            hideLoginModal();
+            document.getElementById('signupModal').style.display = 'flex';
+        }
+        function hideSignupModal() {
+            document.getElementById('signupModal').style.display = 'none';
+        }
+
+        // Login modal form handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginModalForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const email = document.getElementById('loginModalEmail')?.value?.trim();
+                    const password = document.getElementById('loginModalPassword')?.value;
+                    const errEl = document.getElementById('loginModalEmailError');
+                    const selectedRole = localStorage.getItem('selectedRole');
+                    if (errEl) errEl.style.display = 'none';
+                    document.getElementById('loginModalPasswordError').style.display = 'none';
+                    if (!email || !password) {
+                        if (errEl) { errEl.textContent = 'Please fill in all fields'; errEl.style.display = 'block'; }
+                        return;
+                    }
+                    if (!selectedRole || (selectedRole !== 'admin' && selectedRole !== 'staff')) {
+                        if (errEl) { errEl.textContent = 'Please select a role first.'; errEl.style.display = 'block'; }
+                        return;
+                    }
+                    await handleLoginModal(email, password);
+                });
+            }
+
+            const signupForm = document.getElementById('signupModalForm');
+            if (signupForm) {
+                signupForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const fullName = document.getElementById('signupModalFullName')?.value?.trim();
+                    const email = document.getElementById('signupModalEmail')?.value?.trim();
+                    const password = document.getElementById('signupModalPassword')?.value;
+                    const confirm = document.getElementById('signupModalConfirm')?.value;
+                    const errEl = document.getElementById('signupModalEmailError');
+                    const selectedRole = localStorage.getItem('selectedRole');
+                    document.querySelectorAll('#signupModal .error-message').forEach(m => { m.style.display = 'none'; });
+                    if (!fullName || !email || !password || !confirm) {
+                        if (errEl) { errEl.textContent = 'Please fill in all fields'; errEl.style.display = 'block'; }
+                        return;
+                    }
+                    if (password !== confirm) {
+                        document.getElementById('signupModalConfirmError').textContent = 'Passwords do not match';
+                        document.getElementById('signupModalConfirmError').style.display = 'block';
+                        return;
+                    }
+                    if (!selectedRole || (selectedRole !== 'admin' && selectedRole !== 'staff')) {
+                        if (errEl) { errEl.textContent = 'Please select a role first.'; errEl.style.display = 'block'; }
+                        return;
+                    }
+                    await handleSignupModal(fullName, email, password, selectedRole);
+                });
+            }
+        });
+
+        async function handleLoginModal(email, password) {
+            if (!supabaseClient) {
+                document.getElementById('loginModalEmailError').textContent = 'Database not connected.';
+                document.getElementById('loginModalEmailError').style.display = 'block';
+                return;
+            }
+            const btn = document.getElementById('loginModalBtn');
+            const origText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+            const errEl = document.getElementById('loginModalEmailError');
+            const pwdErr = document.getElementById('loginModalPasswordError');
+            try {
+                const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (authError) throw new Error(authError.message);
+                const { data: userProfile, error: profileError } = await supabaseClient.from('User').select('*').eq('id', authData.user.id).single();
+                if (profileError || !userProfile) throw new Error('User profile not found.');
+                const actualRole = userProfile.role;
+                const selectedRole = localStorage.getItem('selectedRole');
+                const roleMatches = (selectedRole === actualRole) || (selectedRole === 'staff' && actualRole === 'employee');
+                if (!roleMatches) throw new Error(`Access denied. You are registered as ${actualRole}. Please select the correct role.`);
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userId', authData.user.id);
+                localStorage.setItem('userRole', actualRole);
+                localStorage.setItem('selectedRole', selectedRole);
+                localStorage.setItem('isAuthenticated', 'true');
+                hideLoginModal();
+                if (selectedRole === 'admin') window.location.href = 'admin-dashboard.html';
+                else window.location.href = 'staff-dashboard.html';
+            } catch (err) {
+                errEl.textContent = err.message || 'Invalid email or password.';
+                errEl.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = origText;
+            }
+        }
+
+        async function handleSignupModal(fullName, email, password, role) {
+            if (!supabaseClient) {
+                document.getElementById('signupModalEmailError').textContent = 'Database not connected.';
+                document.getElementById('signupModalEmailError').style.display = 'block';
+                return;
+            }
+            const btn = document.getElementById('signupModalBtn');
+            const origText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+            const errEl = document.getElementById('signupModalEmailError');
+            try {
+                const dbRole = role === 'staff' ? 'employee' : role;
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password, options: { data: { role } } });
+                if (authError) throw new Error(authError.message);
+                await new Promise(r => setTimeout(r, 500));
+                const { error: profileError } = await supabaseClient.from('User').insert([{ id: authData.user.id, role: dbRole, name: fullName, email }]).select();
+                if (profileError) throw new Error(profileError.message || 'Failed to create profile.');
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userId', authData.user.id);
+                localStorage.setItem('userRole', dbRole);
+                localStorage.setItem('selectedRole', role);
+                localStorage.setItem('isAuthenticated', 'true');
+                hideSignupModal();
+                if (role === 'admin') window.location.href = 'admin-dashboard.html';
+                else window.location.href = 'staff-dashboard.html';
+            } catch (err) {
+                errEl.textContent = err.message || 'Signup failed.';
+                errEl.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = origText;
             }
         }
 
