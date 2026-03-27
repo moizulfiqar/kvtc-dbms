@@ -264,7 +264,74 @@
             }
         }
     </style>
+
+    <!-- Mobile UI Override to Reduce Density -->
+    <style>
+        @media (max-width: 768px) {
+            /* Layout & Breathing Room */
+            .header { padding: 20px 24px !important; gap: 20px !important; }
+            .nav-section { gap: 24px !important; margin-top: 8px !important; }
+            .main-content { padding: 50px 24px !important; }
+            .sidebar { padding: 24px !important; margin-bottom: 24px !important; border-radius: 12px !important; }
+            .main-dashboard { padding: 24px !important; }
+            
+            /* Gaps & Margins */
+            .stats-grid { gap: 24px !important; margin-bottom: 32px !important; }
+            .stat-card { padding: 24px !important; border-radius: 16px !important; }
+            .dashboard-header { margin-bottom: 32px !important; flex-direction: column !important; gap: 24px !important; }
+            .filter-section { gap: 16px !important; margin-bottom: 24px !important;}
+            
+            /* Typography & Line Heights */
+            .main-heading { font-size: 32px !important; line-height: 1.4 !important; margin-bottom: 24px !important; }
+            .subtitle { font-size: 16px !important; line-height: 1.6 !important; margin-bottom: 40px !important; }
+            
+            /* Tables Data */
+            .data-table { font-size: 15px !important; }
+            .data-table th { padding: 18px 16px !important; font-size: 14px !important; letter-spacing: 0.5px !important; }
+            .data-table td { padding: 18px 16px !important; }
+            td .action-btn { padding: 10px 14px !important; font-size: 14px !important; margin: 4px !important;}
+            
+            /* Inputs & Buttons - Bigger Touch Targets */
+            .primary-btn, .search-btn { padding: 16px 24px !important; font-size: 16px !important; border-radius: 10px !important; }
+            .search-input, .form-input, .form-select { padding: 16px 20px !important; font-size: 16px !important; border-radius: 10px !important; margin-bottom: 8px !important; }
+            
+            /* Modals - Spacious Flow */
+            .modal-container { margin: 24px !important; padding: 40px 24px !important; border-radius: 20px !important; }
+            .modal-title { font-size: 26px !important; margin-bottom: 16px !important; line-height: 1.3 !important; }
+            .modal-subtitle { font-size: 16px !important; margin-bottom: 32px !important; line-height: 1.5 !important; }
+            .form-group, .edit-form-group { margin-bottom: 28px !important; }
+            .edit-form-label { font-size: 15px !important; margin-bottom: 10px !important;}
+            .role-cards-modal { gap: 24px !important; flex-direction: column !important; }
+            .role-card-modal { width: 100% !important; max-width: none !important; padding: 28px !important; border-radius: 16px !important;}
+            .continue-modal-btn { padding: 18px 24px !important; font-size: 18px !important; border-radius: 12px !important; margin-top: 10px !important;}
+            
+            /* List Items & Rows */
+            .result-item { padding: 24px !important; gap: 20px !important; border-radius: 16px !important;}
+            .student-avatar { width: 80px !important; height: 80px !important; margin-bottom: 8px !important;}
+            
+            /* Student Details Modal specifically */
+            .student-detail-header { padding: 32px 24px !important; }
+            .student-detail-content { padding: 32px 24px !important; }
+            .info-item { padding: 20px 24px !important; margin-bottom: 16px !important; border-radius: 12px !important;}
+            .report-card { padding: 24px !important; margin-bottom: 16px !important; border-radius: 12px !important;}
+            
+            /* Role Selection Standalone */
+            .role-cards { flex-direction: column !important; gap: 24px !important;}
+            .role-card { width: 100% !important; max-width: 300px !important; padding: 32px !important; }
+            .container { padding: 40px 24px !important; margin: 24px !important; }
+        }
+
+        @media (max-width: 480px) {
+            .main-content { padding: 40px 20px !important; }
+            .header { padding: 16px 20px !important; }
+            .main-heading { font-size: 28px !important; }
+            .modal-container { padding: 32px 20px !important; margin: 16px !important;}
+            .role-card-modal, .role-card { padding: 24px !important; }
+            .stats-grid { gap: 16px !important; }
+        }
+    </style>
 </head>
+
 
 <body>
     <div class="signup-container">
