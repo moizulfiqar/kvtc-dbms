@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Load shared Supabase config from public/KVTC -->
-    <script src="../../public/KVTC/config.js"></script>
+    <script src="config.js"></script>
     <style>
         * {
             margin: 0;
@@ -121,7 +122,10 @@
             text-decoration: none;
             margin-bottom: 20px;
         }
-        .back-link:hover { color: #1e3a8a; }
+
+        .back-link:hover {
+            color: #1e3a8a;
+        }
 
         .progress-dots {
             display: flex;
@@ -184,6 +188,7 @@
                 opacity: 0;
                 transform: scale(0.9) translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1) translateY(0);
@@ -356,40 +361,42 @@
         }
     </style>
 </head>
+
 <body>
     <div class="login-container" id="loginContainer">
         <a href="home.html" class="back-link">← Back</a>
         <h1 class="login-title">Welcome Back!</h1>
-        
+
         <form id="loginForm">
             <div class="form-group">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" id="email" name="email" class="form-input" required>
                 <div class="error-message" id="emailError"></div>
             </div>
-            
+
             <div class="form-group">
                 <label for="password" class="form-label">Password</label>
                 <input type="password" id="password" name="password" class="form-input" required>
                 <div style="text-align: right; margin-top: 5px;">
-                    <a href="#" onclick="openForgotPasswordModal(); return false;" style="color: #1e3a8a; text-decoration: none; font-size: 14px;">Forgot Password?</a>
+                    <a href="#" onclick="openForgotPasswordModal(); return false;"
+                        style="color: #1e3a8a; text-decoration: none; font-size: 14px;">Forgot Password?</a>
                 </div>
                 <div class="error-message" id="passwordError"></div>
             </div>
-            
+
             <button type="submit" class="sign-in-btn" id="loginBtn">
                 <span id="btnText">Sign In</span>
                 <span id="loadingText" class="loading">Signing in...</span>
             </button>
         </form>
-        
+
         <div class="divider">or</div>
-        
+
         <p class="signup-text">
             Don't have an account? <a href="signup.html" class="signup-link">Sign Up</a>
         </p>
-        
-        
+
+
         <div class="progress-dots">
             <div class="progress-dot"></div>
             <div class="progress-dot active"></div>
@@ -403,12 +410,14 @@
         <form id="setNewPasswordForm">
             <div class="form-group">
                 <label for="newPassword" class="form-label">New password</label>
-                <input type="password" id="newPassword" class="form-input" required minlength="6" placeholder="At least 6 characters">
+                <input type="password" id="newPassword" class="form-input" required minlength="6"
+                    placeholder="At least 6 characters">
                 <div class="error-message" id="newPasswordError"></div>
             </div>
             <div class="form-group">
                 <label for="confirmPassword" class="form-label">Confirm password</label>
-                <input type="password" id="confirmPassword" class="form-input" required minlength="6" placeholder="Re-enter password">
+                <input type="password" id="confirmPassword" class="form-input" required minlength="6"
+                    placeholder="Re-enter password">
                 <div class="error-message" id="confirmPasswordError"></div>
             </div>
             <button type="submit" class="sign-in-btn" id="setPasswordBtn">
@@ -444,7 +453,7 @@
         const selectedRole = localStorage.getItem('selectedRole');
         if (isRecoveryMode()) {
             // User clicked "Reset Password" in email — show set-new-password form, don't redirect
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('setNewPasswordContainer').style.display = 'block';
             });
@@ -454,18 +463,18 @@
             window.location.href = 'home.html';
         }
 
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            
+
             // Clear previous error messages
             document.querySelectorAll('.error-message').forEach(msg => {
                 msg.style.display = 'none';
                 msg.textContent = '';
             });
-            
+
             if (email && password) {
                 // Check if role is selected
                 if (!selectedRole) {
@@ -475,13 +484,13 @@
                     }, 2000);
                     return;
                 }
-                
+
                 // Validate role
                 if (!isValidRole(selectedRole)) {
                     showError('emailError', 'Invalid role selected. Please select a valid role.');
                     return;
                 }
-                
+
                 await handleLogin(email, password);
             } else {
                 showError('emailError', 'Please fill in all fields');
@@ -496,12 +505,12 @@
             const loginBtn = document.getElementById('loginBtn');
             const btnText = document.getElementById('btnText');
             const loadingText = document.getElementById('loadingText');
-            
+
             // Show loading state
             loginBtn.disabled = true;
             btnText.style.display = 'none';
             loadingText.style.display = 'inline';
-            
+
             try {
                 // Sign in with Supabase
                 const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
@@ -539,13 +548,13 @@
 
                     // Success! User's selected role matches their stored role
                     alert(`Login successful!\nWelcome ${email}\nRole: ${actualRole}`);
-                    
+
                     localStorage.setItem('userEmail', email);
                     localStorage.setItem('userId', authData.user.id);
                     localStorage.setItem('userRole', actualRole);
                     localStorage.setItem('selectedRole', selectedRole);
                     localStorage.setItem('isAuthenticated', 'true');
-                    
+
                     // Redirect based on selected role: admin -> admin dashboard, staff -> staff dashboard
                     if (selectedRole === 'admin') {
                         window.location.href = 'admin-dashboard.html';
@@ -553,11 +562,11 @@
                         window.location.href = 'staff-dashboard.html';
                     }
                 }
-                
+
             } catch (error) {
                 console.error('Login error:', error);
                 showError('emailError', error.message || 'Invalid email or password. Please try again.');
-                
+
                 // Reset button state
                 loginBtn.disabled = false;
                 btnText.style.display = 'inline';
@@ -582,7 +591,7 @@
         }
 
         // Handle sign up link
-        document.querySelector('.signup-link').addEventListener('click', function(e) {
+        document.querySelector('.signup-link').addEventListener('click', function (e) {
             console.log('Sign up link clicked');
             // Link will navigate naturally to signup.html
         });
@@ -599,20 +608,20 @@
             document.getElementById('resetSuccess').style.display = 'none';
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('forgotPasswordForm');
             if (!form) return;
-            form.addEventListener('submit', async function(e) {
+            form.addEventListener('submit', async function (e) {
                 e.preventDefault();
-                
+
                 const email = document.getElementById('resetEmail').value;
                 const errorElement = document.getElementById('resetEmailError');
                 const successElement = document.getElementById('resetSuccess');
-                
+
                 // Clear previous messages
                 errorElement.style.display = 'none';
                 successElement.style.display = 'none';
-                
+
                 try {
                     if (!supabaseClient) {
                         throw new Error('Database not connected. Please try again later.');
@@ -621,16 +630,16 @@
                     const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
                         redirectTo: window.location.origin + '/pages/KVTC/login.html'
                     });
-                    
+
                     if (error) {
                         throw error;
                     }
-                    
+
                     successElement.style.display = 'block';
                     setTimeout(() => {
                         closeForgotPasswordModal();
                     }, 3000);
-                    
+
                 } catch (error) {
                     errorElement.textContent = error.message || 'Error sending reset email. Please try again.';
                     errorElement.style.display = 'block';
@@ -639,10 +648,10 @@
         });
 
         // Set new password (when user lands from reset link with type=recovery in hash)
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const setForm = document.getElementById('setNewPasswordForm');
             if (!setForm) return;
-            setForm.addEventListener('submit', async function(e) {
+            setForm.addEventListener('submit', async function (e) {
                 e.preventDefault();
                 const newPassword = document.getElementById('newPassword').value;
                 const confirmPassword = document.getElementById('confirmPassword').value;
@@ -691,13 +700,13 @@
             });
         });
     </script>
-    
+
     <!-- Forgot Password Modal -->
     <div class="modal-overlay" id="forgotPasswordModal" style="display: none;">
         <div class="modal-container">
             <h2 class="modal-title">Reset Password</h2>
             <p class="modal-subtitle">Enter your email to receive a password reset link</p>
-            
+
             <form id="forgotPasswordForm">
                 <div class="form-group">
                     <label for="resetEmail" class="form-label">Email</label>
@@ -705,13 +714,15 @@
                     <div class="error-message" id="resetEmailError"></div>
                     <div class="success-message" id="resetSuccess">Password reset email sent! Check your inbox.</div>
                 </div>
-                
+
                 <div class="modal-actions">
                     <button type="submit" class="continue-modal-btn">Send Reset Link</button>
-                    <button type="button" class="continue-modal-btn" onclick="closeForgotPasswordModal()" style="background: #94a3b8; margin-top: 10px;">Cancel</button>
+                    <button type="button" class="continue-modal-btn" onclick="closeForgotPasswordModal()"
+                        style="background: #94a3b8; margin-top: 10px;">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 </body>
-</html> 
+
+</html>

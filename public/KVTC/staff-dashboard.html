@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -144,7 +145,7 @@
         }
 
         .highlight-text {
-            color:#008000;
+            color: #008000;
         }
 
         .subtitle {
@@ -382,6 +383,7 @@
                 opacity: 0;
                 transform: scale(0.9) translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1) translateY(0);
@@ -495,7 +497,10 @@
             text-decoration: underline;
         }
 
-        .modal-content { position: relative; }
+        .modal-content {
+            position: relative;
+        }
+
         .modal-back-btn {
             position: absolute;
             top: 0;
@@ -507,12 +512,35 @@
             cursor: pointer;
             padding: 4px 8px;
         }
-        .modal-back-btn:hover { color: #1e3a8a; }
 
-        .edit-form-group { margin-bottom: 16px; }
-        .edit-form-label { display: block; font-size: 14px; color: #374151; margin-bottom: 6px; font-weight: 500; }
-        .edit-form-input { width: 100%; padding: 10px 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 15px; }
-        .edit-form-input:focus { outline: none; border-color: #1e3a8a; }
+        .modal-back-btn:hover {
+            color: #1e3a8a;
+        }
+
+        .edit-form-group {
+            margin-bottom: 16px;
+        }
+
+        .edit-form-label {
+            display: block;
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .edit-form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .edit-form-input:focus {
+            outline: none;
+            border-color: #1e3a8a;
+        }
 
         /* Student Detail Modal Styles */
         .student-detail-modal {
@@ -681,10 +709,21 @@
             margin-bottom: 10px;
         }
 
-        .report-type.mtr { background: #e74c3c; }
-        .report-type.pdr { background: #065f46; }
-        .report-type.ttb { background: #27ae60; }
-        .report-type.ftr { background: #9b59b6; }
+        .report-type.mtr {
+            background: #e74c3c;
+        }
+
+        .report-type.pdr {
+            background: #065f46;
+        }
+
+        .report-type.ttb {
+            background: #27ae60;
+        }
+
+        .report-type.ftr {
+            background: #9b59b6;
+        }
 
         .report-details {
             margin-bottom: 15px;
@@ -753,8 +792,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Responsive Design for Modal */
@@ -1384,6 +1428,7 @@
                 opacity: 0;
                 transform: scale(0.9) translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1) translateY(0);
@@ -1520,6 +1565,7 @@
 
         /* Disable print styles - Staff Dashboard Only */
         @media print {
+
             .report-viewer-modal,
             .report-viewer-container,
             .report-viewer-content,
@@ -1527,11 +1573,11 @@
                 display: none !important;
                 visibility: hidden !important;
             }
-            
+
             body {
                 overflow: hidden !important;
             }
-            
+
             /* Hide everything when trying to print */
             * {
                 display: none !important;
@@ -1623,8 +1669,9 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../../public/KVTC/config.js"></script>
+    <script src="config.js"></script>
 </head>
+
 <body>
     <header class="header">
         <div class="logo-section">
@@ -1634,12 +1681,13 @@
                 <div class="brand-subtitle">Manage. Track. Support.</div>
             </div>
         </div>
-        
+
         <nav class="nav-section">
             <span class="role-indicator" id="roleDisplay">Role: —</span>
             <button class="logout-btn" onclick="logout()">
                 <svg class="logout-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M16 17V14H9V10H16V7L21 12L16 17M14 2C15.11 2 16 2.9 16 4V6H14V4H5V20H14V18H16V20C16 21.1 15.11 22 14 22H5C3.9 22 3 21.1 3 20V4C3 2.9 3.9 2 5 2H14Z"/>
+                    <path
+                        d="M16 17V14H9V10H16V7L21 12L16 17M14 2C15.11 2 16 2.9 16 4V6H14V4H5V20H14V18H16V20C16 21.1 15.11 22 14 22H5C3.9 22 3 21.1 3 20V4C3 2.9 3.9 2 5 2H14Z" />
                 </svg>
                 Logout
             </button>
@@ -1648,48 +1696,50 @@
 
     <main class="main-content">
         <div class="blue-curve"></div>
-        
+
         <div class="content-wrapper">
             <div class="left-content">
                 <h1 class="main-heading">
                     Manage <span class="highlight-text">Student Records</span> Easily
                 </h1>
-                
+
                 <p class="subtitle">
                     Quickly search, track, and support student journeys in one place.
                 </p>
-                
+
                 <div class="search-section">
                     <div class="search-container">
-                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#bdc3c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z"
+                                stroke="#bdc3c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                        <input 
-                            type="text" 
-                            class="search-input" 
-                            placeholder="Enter student name or student ID"
-                            id="searchInput"
-                        >
+                        <input type="text" class="search-input" placeholder="Enter student name or student ID"
+                            id="searchInput">
                         <button class="search-btn" onclick="searchStudent()">Find</button>
                     </div>
                     <!-- Advanced Filters -->
                     <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; align-items: center;">
-                        <select id="filterGender" class="search-input" style="flex: 1; min-width: 120px; font-size: 14px; padding: 10px; border-radius: 8px;">
+                        <select id="filterGender" class="search-input"
+                            style="flex: 1; min-width: 120px; font-size: 14px; padding: 10px; border-radius: 8px;">
                             <option value="">All Genders</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                         </select>
-                        
-                        <button onclick="searchStudent()" style="background: #018749; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; white-space: nowrap;">
+
+                        <button onclick="searchStudent()"
+                            style="background: #018749; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; white-space: nowrap;">
                             Apply Filters
                         </button>
-                        <button onclick="clearFilters()" style="background: #94a3b8; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; white-space: nowrap;">
+                        <button onclick="clearFilters()"
+                            style="background: #94a3b8; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; white-space: nowrap;">
                             Clear
                         </button>
                     </div>
-                    
+
                     <div class="search-example">For example: Abdul Ghafoor</div>
-                    
+
                     <!-- Search Results Section -->
                     <div class="search-results" id="searchResults" style="display: none;">
                         <div class="results-header">
@@ -1702,7 +1752,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="right-content">
                 <div class="illustration-container">
                     <img src="folder.svg" alt="Student Records Hero Illustration" class="hero-illustration">
@@ -1712,9 +1762,10 @@
     </main>
 
     <!-- Statistics Section -->
-    <section class="statistics-section" style="max-width: 1200px; margin: 100px auto 0 auto; padding: 40px 40px 30px 40px;">
+    <section class="statistics-section"
+        style="max-width: 1200px; margin: 100px auto 0 auto; padding: 40px 40px 30px 40px;">
         <h3 class="statistics-title">Dashboard Statistics</h3>
-        
+
         <div class="stats-grid">
             <div class="stat-card">
                 <span class="stat-number" id="totalStudents">
@@ -1722,14 +1773,14 @@
                 </span>
                 <span class="stat-label">Total Students</span>
             </div>
-            
+
             <div class="stat-card reports">
                 <span class="stat-number" id="totalReports">
                     <span class="stat-loading">...</span>
                 </span>
                 <span class="stat-label">Total Reports</span>
             </div>
-            
+
 
             <div class="stat-card female">
                 <span class="stat-number" id="totalFemaleStudents">
@@ -1767,7 +1818,7 @@
             <div class="modal-content">
                 <h2 class="modal-title">Welcome to KVTC Student Management System</h2>
                 <p class="modal-subtitle">Please select your role to continue</p>
-                
+
                 <div class="role-cards-modal">
                     <div class="role-card-modal" onclick="selectRoleModal('admin')">
                         <div class="role-icon-modal">
@@ -1775,7 +1826,7 @@
                         </div>
                         <span class="role-text-modal">Admin</span>
                     </div>
-                    
+
                     <div class="role-card-modal" onclick="selectRoleModal('staff')">
                         <div class="role-icon-modal">
                             <img src="16.png" alt="Staff" class="role-image">
@@ -1783,7 +1834,7 @@
                         <span class="role-text-modal">Staff</span>
                     </div>
                 </div>
-                
+
                 <div class="modal-actions">
                     <button class="continue-modal-btn" id="continueModalBtn" onclick="proceedToLogin()" disabled>
                         Continue
@@ -1797,24 +1848,30 @@
     <div class="modal-overlay" id="loginModal" style="display: none;">
         <div class="modal-container">
             <div class="modal-content">
-                <button type="button" class="modal-back-btn" onclick="hideLoginModal(); showRoleSelectionModal();" title="Back">← Back</button>
+                <button type="button" class="modal-back-btn" onclick="hideLoginModal(); showRoleSelectionModal();"
+                    title="Back">← Back</button>
                 <h2 class="modal-title">Welcome Back!</h2>
                 <p class="modal-subtitle">Sign in to continue</p>
                 <form id="loginModalForm">
                     <div class="edit-form-group">
                         <label class="edit-form-label" for="loginModalEmail">Email</label>
                         <input type="email" id="loginModalEmail" class="edit-form-input" required>
-                        <div class="error-message" id="loginModalEmailError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                        <div class="error-message" id="loginModalEmailError"
+                            style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
                     </div>
                     <div class="edit-form-group">
                         <label class="edit-form-label" for="loginModalPassword">Password</label>
                         <input type="password" id="loginModalPassword" class="edit-form-input" required>
-                        <div style="text-align:right;margin-top:4px;"><a href="login.html" style="color:#1e3a8a;font-size:13px;">Forgot Password?</a></div>
-                        <div class="error-message" id="loginModalPasswordError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                        <div style="text-align:right;margin-top:4px;"><a href="login.html"
+                                style="color:#1e3a8a;font-size:13px;">Forgot Password?</a></div>
+                        <div class="error-message" id="loginModalPasswordError"
+                            style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
                     </div>
                     <div class="modal-actions">
-                        <button type="submit" class="continue-modal-btn" id="loginModalBtn" style="width:100%;">Sign In</button>
-                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Don't have an account? <a href="#" class="signup-modal-link" onclick="showSignupModal(); return false;">Sign Up</a></p>
+                        <button type="submit" class="continue-modal-btn" id="loginModalBtn" style="width:100%;">Sign
+                            In</button>
+                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Don't have an account? <a href="#"
+                                class="signup-modal-link" onclick="showSignupModal(); return false;">Sign Up</a></p>
                     </div>
                 </form>
             </div>
@@ -1825,29 +1882,37 @@
     <div class="modal-overlay" id="signupModal" style="display: none;">
         <div class="modal-container">
             <div class="modal-content">
-                <button type="button" class="modal-back-btn" onclick="hideSignupModal(); showLoginModal();" title="Back">← Back</button>
+                <button type="button" class="modal-back-btn" onclick="hideSignupModal(); showLoginModal();"
+                    title="Back">← Back</button>
                 <h2 class="modal-title">Create an Account</h2>
                 <p class="modal-subtitle">Sign up to get started</p>
                 <form id="signupModalForm">
                     <div class="edit-form-group">
                         <label class="edit-form-label" for="signupModalEmail">Email</label>
                         <input type="email" id="signupModalEmail" class="edit-form-input" required>
-                        <div class="error-message" id="signupModalEmailError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                        <div class="error-message" id="signupModalEmailError"
+                            style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
                     </div>
                     <div class="edit-form-group">
                         <label class="edit-form-label" for="signupModalPassword">Password</label>
-                        <input type="password" id="signupModalPassword" class="edit-form-input" required minlength="8" autocomplete="new-password">
-                        <div style="font-size:11px;color:#64748b;margin-top:4px;">At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character</div>
-                        <div class="error-message" id="signupModalPasswordError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                        <input type="password" id="signupModalPassword" class="edit-form-input" required minlength="8"
+                            autocomplete="new-password">
+                        <div style="font-size:11px;color:#64748b;margin-top:4px;">At least 8 chars, 1 uppercase, 1
+                            lowercase, 1 number, 1 special character</div>
+                        <div class="error-message" id="signupModalPasswordError"
+                            style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
                     </div>
                     <div class="edit-form-group">
                         <label class="edit-form-label" for="signupModalConfirm">Confirm Password</label>
                         <input type="password" id="signupModalConfirm" class="edit-form-input" required>
-                        <div class="error-message" id="signupModalConfirmError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                        <div class="error-message" id="signupModalConfirmError"
+                            style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
                     </div>
                     <div class="modal-actions">
-                        <button type="submit" class="continue-modal-btn" id="signupModalBtn" style="width:100%;">Sign Up</button>
-                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Already have an account? <a href="#" class="signup-modal-link" onclick="showLoginModal(); return false;">Sign In</a></p>
+                        <button type="submit" class="continue-modal-btn" id="signupModalBtn" style="width:100%;">Sign
+                            Up</button>
+                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Already have an account? <a href="#"
+                                class="signup-modal-link" onclick="showLoginModal(); return false;">Sign In</a></p>
                     </div>
                 </form>
             </div>
@@ -1909,7 +1974,7 @@
         const userEmail = localStorage.getItem('userEmail');
 
         // Initialize page based on authentication (role selection is only on home.html)
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             if (!isAuthenticated) {
                 window.location.href = 'home.html';
                 return;
@@ -1931,7 +1996,7 @@
         function disableFeatures() {
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.querySelector('.search-btn');
-            
+
             searchInput.disabled = true;
             searchInput.placeholder = 'Please login to search students';
             searchBtn.disabled = true;
@@ -1943,7 +2008,7 @@
         function enableFeatures() {
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.querySelector('.search-btn');
-            
+
             searchInput.disabled = false;
             searchInput.placeholder = 'Enter student name or student ID';
             searchBtn.disabled = false;
@@ -1959,26 +2024,26 @@
             }
             const searchTerm = document.getElementById('searchInput').value.trim();
             const filterGender = document.getElementById('filterGender').value;
-            
+
             let query = supabaseClient.from('Students').select('*');
-            
+
             // Apply search term
             if (searchTerm) {
                 query = query.ilike('name', `%${searchTerm}%`);
             }
-            
+
             // Apply gender filter
             if (filterGender) {
                 query = query.eq('gender', filterGender);
             }
-            
+
             const { data: students, error } = await query;
-            
+
             if (error) {
                 alert('Error fetching students: ' + error.message);
                 return;
             }
-            
+
             displaySearchResults(students || [], searchTerm);
         }
 
@@ -1993,16 +2058,16 @@
         function displaySearchResults(students, searchTerm) {
             const resultsContainer = document.getElementById('searchResults');
             const resultsList = document.getElementById('resultsList');
-            
+
             // Clear previous results
             resultsList.innerHTML = '';
-            
+
             if (students.length > 0) {
                 students.forEach(student => {
                     const resultItem = document.createElement('div');
                     resultItem.className = 'result-item';
                     resultItem.onclick = () => selectStudent(student);
-                    
+
                     // Use profile_picture_url or fallback
                     const avatarUrl = student.profile_picture_url || 'no pfp.jpeg';
 
@@ -2014,7 +2079,7 @@
                             <div class="student-id">Gender: ${student.gender || 'N/A'}</div>
                         </div>
                     `;
-                    
+
                     resultsList.appendChild(resultItem);
                 });
             } else {
@@ -2026,7 +2091,7 @@
                     </div>
                 `;
             }
-            
+
             // Show results container
             resultsContainer.style.display = 'block';
         }
@@ -2035,7 +2100,7 @@
         async function selectStudent(student) {
             // Add to recently viewed
             addToRecentlyViewed(student);
-            
+
             // Store current viewing student ID for tracking
             localStorage.setItem('currentViewingStudentId', student.id);
 
@@ -2050,20 +2115,20 @@
 
             // Get all student object keys and display them
             const excludeFields = ['profile_picture_url', 'id', 'created_at']; // Fields to exclude from the grid
-            
+
             Object.keys(student).forEach(key => {
                 if (!excludeFields.includes(key) && student[key] !== null && student[key] !== undefined) {
                     const infoItem = document.createElement('div');
                     infoItem.className = 'info-item';
-                    
+
                     // Format field name for display
                     const displayLabel = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    
+
                     infoItem.innerHTML = `
                         <div class="info-label">${displayLabel}</div>
                         <div class="info-value">${student[key]}</div>
                     `;
-                    
+
                     studentInfoGrid.appendChild(infoItem);
                 }
             });
@@ -2081,7 +2146,7 @@
         // Load student reports
         async function loadStudentReports(studentId) {
             const reportsContainer = document.getElementById('reportsContainer');
-            
+
             try {
                 // Query student_reports table
                 const { data: reports, error } = await supabaseClient
@@ -2186,7 +2251,7 @@
                 const fileUrl = report.file_url;
                 const reportType = report.report_type || 'unknown';
                 console.log('Opening report file:', reportType, 'URL type:', fileUrl?.startsWith('data:') ? 'Data URL' : 'Regular URL');
-                
+
                 // Show modal
                 const modal = document.getElementById('reportViewerModal');
                 const title = document.getElementById('reportViewerTitle');
@@ -2216,7 +2281,7 @@
                             byteNumbers[i] = byteCharacters.charCodeAt(i);
                         }
                         const byteArray = new Uint8Array(byteNumbers);
-                        
+
                         let mimeType = 'application/pdf';
                         if (fileUrl.includes('data:application/pdf')) {
                             mimeType = 'application/pdf';
@@ -2228,15 +2293,15 @@
 
                         const blob = new Blob([byteArray], { type: mimeType });
                         const blobUrl = URL.createObjectURL(blob);
-                        
+
                         iframe.src = blobUrl;
-                        iframe.onload = function() {
+                        iframe.onload = function () {
                             loading.style.display = 'none';
                             iframe.style.display = 'block';
                             // Apply additional restrictions after iframe loads
                             applyIframeRestrictions(iframe);
                         };
-                        iframe.onerror = function() {
+                        iframe.onerror = function () {
                             loading.style.display = 'none';
                             error.style.display = 'block';
                         };
@@ -2248,13 +2313,13 @@
                 } else {
                     // For regular URLs
                     iframe.src = fileUrl;
-                    iframe.onload = function() {
+                    iframe.onload = function () {
                         loading.style.display = 'none';
                         iframe.style.display = 'block';
                         // Apply additional restrictions after iframe loads
                         applyIframeRestrictions(iframe);
                     };
-                    iframe.onerror = function() {
+                    iframe.onerror = function () {
                         loading.style.display = 'none';
                         error.style.display = 'block';
                     };
@@ -2270,70 +2335,70 @@
         // Function to disable browser features and shortcuts
         function disableBrowserFeatures() {
             // Disable keyboard shortcuts
-            const disableShortcuts = function(e) {
+            const disableShortcuts = function (e) {
                 // Disable Ctrl+P (Print)
                 if (e.ctrlKey && e.keyCode === 80) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
-                
+
                 // Disable Ctrl+S (Save)
                 if (e.ctrlKey && e.keyCode === 83) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
-                
+
                 // Disable Ctrl+A (Select All)
                 if (e.ctrlKey && e.keyCode === 65) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
-                
+
                 // Disable Ctrl+C (Copy)
                 if (e.ctrlKey && e.keyCode === 67) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
-                
+
                 // Disable Ctrl+V (Paste)
                 if (e.ctrlKey && e.keyCode === 86) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
-                
+
                 // Disable Ctrl+X (Cut)
                 if (e.ctrlKey && e.keyCode === 88) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
-                
+
                 // Disable F12 (Developer Tools)
                 if (e.keyCode === 123) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
-                
+
                 // Disable Ctrl+Shift+I (Developer Tools)
                 if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
-                
+
                 // Disable Ctrl+U (View Source)
                 if (e.ctrlKey && e.keyCode === 85) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
-                
+
                 // Allow only scrolling keys (Arrow keys, Page Up/Down, Home, End)
                 const allowedKeys = [
                     33, // Page Up
@@ -2346,7 +2411,7 @@
                     40, // Down Arrow
                     27  // Escape (to close modal)
                 ];
-                
+
                 // If it's not an allowed key and not a modifier, prevent it
                 if (!allowedKeys.includes(e.keyCode) && !e.ctrlKey && !e.altKey && !e.shiftKey) {
                     // Allow regular scrolling and navigation but prevent other keys
@@ -2358,18 +2423,18 @@
                     }
                 }
             };
-            
+
             // Disable right-click context menu
-            const disableContextMenu = function(e) {
+            const disableContextMenu = function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
             };
-            
+
             // Add event listeners
             document.addEventListener('keydown', disableShortcuts, true);
             document.addEventListener('contextmenu', disableContextMenu, true);
-            
+
             // Store the event listeners for removal later
             window.staffReportViewerEvents = {
                 keydown: disableShortcuts,
@@ -2395,25 +2460,25 @@
                 iframe.style.webkitUserSelect = 'none';
                 iframe.style.mozUserSelect = 'none';
                 iframe.style.msUserSelect = 'none';
-                
+
                 // Try to access iframe content if same-origin
                 try {
                     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
                     if (iframeDoc) {
                         // Disable context menu in iframe
-                        iframeDoc.addEventListener('contextmenu', function(e) {
+                        iframeDoc.addEventListener('contextmenu', function (e) {
                             e.preventDefault();
                             return false;
                         });
-                        
+
                         // Disable text selection in iframe
                         iframeDoc.body.style.userSelect = 'none';
                         iframeDoc.body.style.webkitUserSelect = 'none';
                         iframeDoc.body.style.mozUserSelect = 'none';
                         iframeDoc.body.style.msUserSelect = 'none';
-                        
+
                         // Disable drag and drop in iframe
-                        iframeDoc.addEventListener('dragstart', function(e) {
+                        iframeDoc.addEventListener('dragstart', function (e) {
                             e.preventDefault();
                             return false;
                         });
@@ -2431,19 +2496,19 @@
         function closeReportViewer() {
             const modal = document.getElementById('reportViewerModal');
             const iframe = document.getElementById('reportViewerIframe');
-            
+
             modal.style.display = 'none';
             iframe.src = ''; // Clear iframe source
-            
+
             // Re-enable browser features
             enableBrowserFeatures();
         }
 
         // Close modal when clicking outside
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const modal = document.getElementById('reportViewerModal');
             if (modal) {
-                modal.addEventListener('click', function(e) {
+                modal.addEventListener('click', function (e) {
                     if (e.target === modal) {
                         closeReportViewer();
                     }
@@ -2470,12 +2535,12 @@
 
             // Add selected class to clicked card
             event.target.closest('.role-card-modal').classList.add('selected');
-            
+
             selectedModalRole = role;
-            
+
             // Enable continue button
             document.getElementById('continueModalBtn').disabled = false;
-            
+
             console.log('Selected role in modal:', role);
         }
 
@@ -2504,14 +2569,14 @@
             document.getElementById('signupModal').style.display = 'none';
         }
 
-        document.getElementById('loginModal').addEventListener('click', function(e) {
+        document.getElementById('loginModal').addEventListener('click', function (e) {
             if (e.target === this) hideLoginModal();
         });
-        document.getElementById('signupModal').addEventListener('click', function(e) {
+        document.getElementById('signupModal').addEventListener('click', function (e) {
             if (e.target === this) hideSignupModal();
         });
 
-        document.getElementById('loginModalForm').addEventListener('submit', async function(e) {
+        document.getElementById('loginModalForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const email = document.getElementById('loginModalEmail').value;
             const password = document.getElementById('loginModalPassword').value;
@@ -2549,12 +2614,12 @@
             }
         });
 
-        document.getElementById('signupModalForm').addEventListener('submit', async function(e) {
+        document.getElementById('signupModalForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const email = document.getElementById('signupModalEmail').value.trim();
             const password = document.getElementById('signupModalPassword').value;
             const confirm = document.getElementById('signupModalConfirm').value;
-            ['signupModalEmailError','signupModalPasswordError','signupModalConfirmError'].forEach(id => {
+            ['signupModalEmailError', 'signupModalPasswordError', 'signupModalConfirmError'].forEach(id => {
                 const el = document.getElementById(id);
                 el.style.display = 'none';
                 el.textContent = '';
@@ -2604,7 +2669,7 @@
         });
 
         // Enter key support for search
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 searchStudent();
             }
@@ -2626,14 +2691,14 @@
         }
 
         // Simple animation for illustrations
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const illustrations = document.querySelectorAll('.illustration-container img');
-            
+
             illustrations.forEach((img, index) => {
                 img.style.opacity = '0';
                 img.style.transform += ' translateY(20px)';
                 img.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                
+
                 setTimeout(() => {
                     img.style.opacity = '1';
                     img.style.transform = img.style.transform.replace('translateY(20px)', 'translateY(0)');
@@ -2647,7 +2712,7 @@
         }
 
         // Close modal when clicking outside
-        document.getElementById('studentDetailModal').addEventListener('click', function(e) {
+        document.getElementById('studentDetailModal').addEventListener('click', function (e) {
             if (e.target === this) {
                 closeStudentDetailModal();
             }
@@ -2797,22 +2862,22 @@
         // Add student to recently viewed
         function addToRecentlyViewed(student) {
             let recentStudents = getRecentlyViewedStudents();
-            
+
             // Remove if already exists
             recentStudents = recentStudents.filter(s => s.id !== student.id);
-            
+
             // Add to beginning with timestamp
             recentStudents.unshift({
                 ...student,
                 viewedAt: new Date().toISOString()
             });
-            
+
             // Keep only last 5 students
             recentStudents = recentStudents.slice(0, 5);
-            
+
             // Save to localStorage
             localStorage.setItem('recentlyViewedStudents', JSON.stringify(recentStudents));
-            
+
             // Update display
             loadRecentlyViewedStudents();
         }
@@ -2860,29 +2925,29 @@
         // Display last login time in footer
         function displayLastLoginTime() {
             const lastLoginElement = document.getElementById('lastLoginTime');
-            
+
             // Get login time from localStorage or use current time
             let loginTime = localStorage.getItem('loginTime');
-            
+
             if (!loginTime) {
                 // If no stored login time, use current time and store it
                 loginTime = new Date().toISOString();
                 localStorage.setItem('loginTime', loginTime);
             }
-            
+
             // Format the date
             const loginDate = new Date(loginTime);
-            const formattedDate = loginDate.toLocaleDateString('en-GB', { 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric' 
+            const formattedDate = loginDate.toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
             });
-            const formattedTime = loginDate.toLocaleTimeString('en-US', { 
-                hour: 'numeric', 
-                minute: '2-digit', 
-                hour12: true 
+            const formattedTime = loginDate.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
             });
-            
+
             lastLoginElement.textContent = `${formattedDate}, ${formattedTime}`;
         }
     </script>
@@ -2920,4 +2985,5 @@
     </div>
 
 </body>
-</html> 
+
+</html>

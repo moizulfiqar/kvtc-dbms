@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -389,6 +390,7 @@
                 opacity: 0;
                 transform: scale(0.9) translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1) translateY(0);
@@ -502,11 +504,35 @@
             text-decoration: underline;
         }
 
-        .modal-content { position: relative; }
-        .edit-form-group { margin-bottom: 18px; }
-        .edit-form-label { display: block; font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 6px; }
-        .edit-form-input { width: 100%; padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 16px; }
-        .edit-form-input:focus { outline: none; border-color: #1e3a8a; }
+        .modal-content {
+            position: relative;
+        }
+
+        .edit-form-group {
+            margin-bottom: 18px;
+        }
+
+        .edit-form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 6px;
+        }
+
+        .edit-form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .edit-form-input:focus {
+            outline: none;
+            border-color: #1e3a8a;
+        }
+
         .modal-back-btn {
             position: absolute;
             top: 0;
@@ -518,7 +544,10 @@
             cursor: pointer;
             padding: 4px 8px;
         }
-        .modal-back-btn:hover { color: #1e3a8a; }
+
+        .modal-back-btn:hover {
+            color: #1e3a8a;
+        }
 
         /* Responsive Design */
         @media (max-width: 1024px) {
@@ -743,8 +772,9 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../../public/KVTC/config.js"></script>
+    <script src="config.js"></script>
 </head>
+
 <body>
     <header class="header">
         <div class="logo-section">
@@ -754,13 +784,14 @@
                 <div class="brand-subtitle">Manage. Track. Support.</div>
             </div>
         </div>
-        
+
         <nav class="nav-section">
             <a href="#" class="nav-link">Home</a>
             <span class="role-indicator" id="roleDisplay">Role: Admin</span>
             <button class="logout-btn" onclick="logout()">
                 <svg class="logout-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M16 17V14H9V10H16V7L21 12L16 17M14 2C15.11 2 16 2.9 16 4V6H14V4H5V20H14V18H16V20C16 21.1 15.11 22 14 22H5C3.9 22 3 21.1 3 20V4C3 2.9 3.9 2 5 2H14Z"/>
+                    <path
+                        d="M16 17V14H9V10H16V7L21 12L16 17M14 2C15.11 2 16 2.9 16 4V6H14V4H5V20H14V18H16V20C16 21.1 15.11 22 14 22H5C3.9 22 3 21.1 3 20V4C3 2.9 3.9 2 5 2H14Z" />
                 </svg>
                 Logout
             </button>
@@ -769,32 +800,31 @@
 
     <main class="main-content">
         <div class="blue-curve"></div>
-        
+
         <div class="content-wrapper">
             <div class="left-content">
                 <h1 class="main-heading">
                     Manage <span class="highlight-text">Student Records</span> Easily
                 </h1>
-                
+
                 <p class="subtitle">
                     Quickly search, track, and support student journeys in one place.
                 </p>
-                
+
                 <div class="search-section">
                     <div class="search-container">
-                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#bdc3c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z"
+                                stroke="#bdc3c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                        <input 
-                            type="text" 
-                            class="search-input" 
-                            placeholder="Enter student name or student ID"
-                            id="searchInput"
-                        >
+                        <input type="text" class="search-input" placeholder="Enter student name or student ID"
+                            id="searchInput">
                         <button class="search-btn" onclick="searchStudent()">Find</button>
                     </div>
                     <div class="search-example">For example: Abdul Ghafoor</div>
-                    
+
                     <!-- Search Results Section -->
                     <div class="search-results" id="searchResults" style="display: none;">
                         <div class="results-header">
@@ -807,7 +837,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="right-content">
                 <div class="illustration-container">
                     <img src="folder.svg" alt="Student Records Hero Illustration" class="hero-illustration">
@@ -822,7 +852,7 @@
             <div class="modal-content">
                 <h2 class="modal-title">Welcome to KVTC Student Management System</h2>
                 <p class="modal-subtitle">Please select your role to continue</p>
-                
+
                 <div class="role-cards-modal">
                     <div class="role-card-modal" onclick="selectRoleModal('admin')">
                         <div class="role-icon-modal">
@@ -830,7 +860,7 @@
                         </div>
                         <span class="role-text-modal">Admin</span>
                     </div>
-                    
+
                     <div class="role-card-modal" onclick="selectRoleModal('staff')">
                         <div class="role-icon-modal">
                             <img src="16.png" alt="Staff" class="role-image">
@@ -838,13 +868,13 @@
                         <span class="role-text-modal">Staff</span>
                     </div>
                 </div>
-                
+
                 <div class="modal-actions">
                     <button class="continue-modal-btn" id="continueModalBtn" onclick="proceedToLogin()" disabled>
                         Continue
                     </button>
                 </div>
-                
+
 
                 <div class="progress-dots">
                     <div class="dot"></div>
@@ -859,24 +889,30 @@
     <div class="modal-overlay" id="loginModal" style="display: none;">
         <div class="modal-container">
             <div class="modal-content">
-                <button type="button" class="modal-back-btn" onclick="hideLoginModal(); showRoleSelectionModal();" title="Back">← Back</button>
+                <button type="button" class="modal-back-btn" onclick="hideLoginModal(); showRoleSelectionModal();"
+                    title="Back">← Back</button>
                 <h2 class="modal-title">Welcome Back!</h2>
                 <p class="modal-subtitle">Sign in to continue</p>
                 <form id="loginModalForm">
                     <div class="edit-form-group">
                         <label class="edit-form-label" for="loginModalEmail">Email</label>
                         <input type="email" id="loginModalEmail" class="edit-form-input" required>
-                        <div class="error-message" id="loginModalEmailError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                        <div class="error-message" id="loginModalEmailError"
+                            style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
                     </div>
                     <div class="edit-form-group">
                         <label class="edit-form-label" for="loginModalPassword">Password</label>
                         <input type="password" id="loginModalPassword" class="edit-form-input" required>
-                        <div style="text-align:right;margin-top:4px;"><a href="login.html" style="color:#1e3a8a;font-size:13px;">Forgot Password?</a></div>
-                        <div class="error-message" id="loginModalPasswordError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                        <div style="text-align:right;margin-top:4px;"><a href="login.html"
+                                style="color:#1e3a8a;font-size:13px;">Forgot Password?</a></div>
+                        <div class="error-message" id="loginModalPasswordError"
+                            style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
                     </div>
                     <div class="modal-actions">
-                        <button type="submit" class="continue-modal-btn" id="loginModalBtn" style="width:100%;">Sign In</button>
-                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Don't have an account? <a href="#" class="signup-modal-link" onclick="showSignupModal(); return false;">Sign Up</a></p>
+                        <button type="submit" class="continue-modal-btn" id="loginModalBtn" style="width:100%;">Sign
+                            In</button>
+                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Don't have an account? <a href="#"
+                                class="signup-modal-link" onclick="showSignupModal(); return false;">Sign Up</a></p>
                     </div>
                 </form>
             </div>
@@ -887,34 +923,44 @@
     <div class="modal-overlay" id="signupModal" style="display: none;">
         <div class="modal-container">
             <div class="modal-content">
-                <button type="button" class="modal-back-btn" onclick="hideSignupModal(); showLoginModal();" title="Back">← Back</button>
+                <button type="button" class="modal-back-btn" onclick="hideSignupModal(); showLoginModal();"
+                    title="Back">← Back</button>
                 <h2 class="modal-title">Create an Account</h2>
                 <p class="modal-subtitle">Sign up to get started</p>
                 <form id="signupModalForm">
                     <div class="edit-form-group">
                         <label class="edit-form-label" for="signupModalFullName">Full Name</label>
-                        <input type="text" id="signupModalFullName" class="edit-form-input" required placeholder="Enter your full name">
-                        <div class="error-message" id="signupModalFullNameError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                        <input type="text" id="signupModalFullName" class="edit-form-input" required
+                            placeholder="Enter your full name">
+                        <div class="error-message" id="signupModalFullNameError"
+                            style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
                     </div>
                     <div class="edit-form-group">
                         <label class="edit-form-label" for="signupModalEmail">Email</label>
                         <input type="email" id="signupModalEmail" class="edit-form-input" required>
-                        <div class="error-message" id="signupModalEmailError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                        <div class="error-message" id="signupModalEmailError"
+                            style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
                     </div>
                     <div class="edit-form-group">
                         <label class="edit-form-label" for="signupModalPassword">Password</label>
-                        <input type="password" id="signupModalPassword" class="edit-form-input" required minlength="8" autocomplete="new-password">
-                        <div style="font-size:11px;color:#64748b;margin-top:4px;">At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character</div>
-                        <div class="error-message" id="signupModalPasswordError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                        <input type="password" id="signupModalPassword" class="edit-form-input" required minlength="8"
+                            autocomplete="new-password">
+                        <div style="font-size:11px;color:#64748b;margin-top:4px;">At least 8 chars, 1 uppercase, 1
+                            lowercase, 1 number, 1 special character</div>
+                        <div class="error-message" id="signupModalPasswordError"
+                            style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
                     </div>
                     <div class="edit-form-group">
                         <label class="edit-form-label" for="signupModalConfirm">Confirm Password</label>
                         <input type="password" id="signupModalConfirm" class="edit-form-input" required>
-                        <div class="error-message" id="signupModalConfirmError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                        <div class="error-message" id="signupModalConfirmError"
+                            style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
                     </div>
                     <div class="modal-actions">
-                        <button type="submit" class="continue-modal-btn" id="signupModalBtn" style="width:100%;">Sign Up</button>
-                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Already have an account? <a href="#" class="signup-modal-link" onclick="showLoginModal(); return false;">Sign In</a></p>
+                        <button type="submit" class="continue-modal-btn" id="signupModalBtn" style="width:100%;">Sign
+                            Up</button>
+                        <p style="margin-top:16px;font-size:14px;color:#64748b;">Already have an account? <a href="#"
+                                class="signup-modal-link" onclick="showLoginModal(); return false;">Sign In</a></p>
                     </div>
                 </form>
             </div>
@@ -943,7 +989,7 @@
         const userEmail = localStorage.getItem('userEmail');
 
         // Initialize page based on authentication
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             if (!isAuthenticated) {
                 // Show role selection modal for unauthenticated users
                 showRoleSelectionModal();
@@ -962,7 +1008,7 @@
         function disableFeatures() {
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.querySelector('.search-btn');
-            
+
             searchInput.disabled = true;
             searchInput.placeholder = 'Please login to search students';
             searchBtn.disabled = true;
@@ -974,7 +1020,7 @@
         function enableFeatures() {
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.querySelector('.search-btn');
-            
+
             searchInput.disabled = false;
             searchInput.placeholder = 'Enter student name or student ID';
             searchBtn.disabled = false;
@@ -1012,16 +1058,16 @@
         function displaySearchResults(students, searchTerm) {
             const resultsContainer = document.getElementById('searchResults');
             const resultsList = document.getElementById('resultsList');
-            
+
             // Clear previous results
             resultsList.innerHTML = '';
-            
+
             if (students.length > 0) {
                 students.forEach(student => {
                     const resultItem = document.createElement('div');
                     resultItem.className = 'result-item';
                     resultItem.onclick = () => selectStudent(student);
-                    
+
                     // Use profile_picture_url or fallback
                     const avatarUrl = student.profile_picture_url || 'no pfp.jpeg';
 
@@ -1033,7 +1079,7 @@
                             <div class="student-id">Gender: ${student.gender || 'N/A'}</div>
                         </div>
                     `;
-                    
+
                     resultsList.appendChild(resultItem);
                 });
             } else {
@@ -1045,7 +1091,7 @@
                     </div>
                 `;
             }
-            
+
             // Show results container
             resultsContainer.style.display = 'block';
         }
@@ -1082,12 +1128,12 @@
 
             // Add selected class to clicked card
             event.target.closest('.role-card-modal').classList.add('selected');
-            
+
             selectedModalRole = role;
-            
+
             // Enable continue button
             document.getElementById('continueModalBtn').disabled = false;
-            
+
             console.log('Selected role in modal:', role);
         }
 
@@ -1115,10 +1161,10 @@
         }
 
         // Login modal form handler
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const loginForm = document.getElementById('loginModalForm');
             if (loginForm) {
-                loginForm.addEventListener('submit', async function(e) {
+                loginForm.addEventListener('submit', async function (e) {
                     e.preventDefault();
                     const email = document.getElementById('loginModalEmail')?.value?.trim();
                     const password = document.getElementById('loginModalPassword')?.value;
@@ -1140,7 +1186,7 @@
 
             const signupForm = document.getElementById('signupModalForm');
             if (signupForm) {
-                signupForm.addEventListener('submit', async function(e) {
+                signupForm.addEventListener('submit', async function (e) {
                     e.preventDefault();
                     const fullName = document.getElementById('signupModalFullName')?.value?.trim();
                     const email = document.getElementById('signupModalEmail')?.value?.trim();
@@ -1241,7 +1287,7 @@
         }
 
         // Enter key support for search
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 searchStudent();
             }
@@ -1254,23 +1300,23 @@
                 localStorage.removeItem('selectedRole');
                 localStorage.removeItem('userEmail');
                 localStorage.removeItem('isAuthenticated');
-                
+
                 console.log('User logged out');
-                
+
                 // Reload the page to show role selection modal
                 window.location.reload();
             }
         }
 
         // Simple animation for illustrations
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const illustrations = document.querySelectorAll('.illustration-container img');
-            
+
             illustrations.forEach((img, index) => {
                 img.style.opacity = '0';
                 img.style.transform += ' translateY(20px)';
                 img.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                
+
                 setTimeout(() => {
                     img.style.opacity = '1';
                     img.style.transform = img.style.transform.replace('translateY(20px)', 'translateY(0)');
@@ -1279,4 +1325,5 @@
         });
     </script>
 </body>
-</html> 
+
+</html>
