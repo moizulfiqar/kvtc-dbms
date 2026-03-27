@@ -389,8 +389,15 @@
             
             /* Inputs & Buttons - Bigger Touch Targets */
             .primary-btn, .search-btn { padding: 16px 24px !important; font-size: 16px !important; border-radius: 10px !important; }
-            .search-input, .form-input, .form-select { padding: 16px 20px !important; font-size: 16px !important; border-radius: 10px !important; margin-bottom: 8px !important; }
+            .form-input, .form-select { padding: 16px 20px !important; font-size: 16px !important; border-radius: 10px !important; margin-bottom: 8px !important; }
             
+            
+            /* Fix Search Bar to be inline and standard */
+            .search-container { flex-direction: row !important; border-radius: 12px !important; padding: 0 !important; margin-bottom: 8px !important; align-items: center !important;}
+            .search-icon { margin-left: 16px !important; margin-bottom: 0 !important; width: 20px !important; height: 20px !important; }
+            .search-input { margin-bottom: 0 !important; border-radius: 0 !important; padding: 16px 12px !important; flex: 1 !important; width: auto !important; }
+            .search-btn { width: auto !important; border-radius: 0 12px 12px 0 !important; padding: 16px 20px !important; margin: 0 !important; }
+    
             /* Modals - Spacious Flow */
             .modal-container { margin: 24px !important; padding: 40px 24px !important; border-radius: 20px !important; }
             .modal-title { font-size: 26px !important; margin-bottom: 16px !important; line-height: 1.3 !important; }
