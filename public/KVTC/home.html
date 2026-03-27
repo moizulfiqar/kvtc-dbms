@@ -977,8 +977,7 @@
                     <div class="edit-form-group">
                         <label class="edit-form-label" for="loginModalPassword">Password</label>
                         <input type="password" id="loginModalPassword" class="edit-form-input" required>
-                        <div style="text-align:right;margin-top:4px;"><a href="login.html"
-                                style="color:#1e3a8a;font-size:13px;">Forgot Password?</a></div>
+                        <div style="text-align:right;margin-top:4px;"><a href="#" onclick="hideLoginModal(); document.getElementById('forgotPasswordModal').style.display = 'flex'; return false;" style="color:#1e3a8a;font-size:13px;">Forgot Password?</a></div>
                         <div class="error-message" id="loginModalPasswordError"
                             style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
                     </div>
@@ -1396,6 +1395,58 @@
                     img.style.transform = img.style.transform.replace('translateY(20px)', 'translateY(0)');
                 }, index * 200);
             });
+        });
+    </script>
+
+    <!-- Forgot Password Modal & Logic -->
+    <style>
+        .success-message { color: #10b981; font-size: 14px; margin-top: 5px; display: none; }
+    </style>
+    <div class="modal-overlay" id="forgotPasswordModal" style="display: none;">
+        <div class="modal-container">
+            <button type="button" class="modal-back-btn" onclick="document.getElementById('forgotPasswordModal').style.display='none'; document.getElementById('loginModal').style.display='flex';" title="Back">← Back</button>
+            <h2 class="modal-title">Reset Password</h2>
+            <p class="modal-subtitle">Enter your email to receive a password reset link</p>
+
+            <form id="forgotPasswordFormNative">
+                <div class="edit-form-group">
+                    <label for="resetEmail" class="edit-form-label">Email</label>
+                    <input type="email" id="resetEmail" class="edit-form-input" required>
+                    <div class="error-message" id="resetEmailError" style="color:#e74c3c;font-size:13px;margin-top:4px;display:none;"></div>
+                    <div class="success-message" id="resetSuccess">Password reset email sent! Check your inbox.</div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="continue-modal-btn">Send Reset Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fwForm = document.getElementById('forgotPasswordFormNative');
+            if (fwForm) {
+                fwForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    const email = document.getElementById('resetEmail').value;
+                    const errEl = document.getElementById('resetEmailError');
+                    const succEl = document.getElementById('resetSuccess');
+                    errEl.style.display = 'none';
+                    succEl.style.display = 'none';
+
+                    try {
+                        if (!window.supabaseClient) throw new Error('Database disconnected.');
+                        const { error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
+                            redirectTo: window.location.origin + '/KVTC/login.html'
+                        });
+                        if (error) throw error;
+                        succEl.style.display = 'block';
+                    } catch (err) {
+                        errEl.textContent = err.message || 'Error sending email.';
+                        errEl.style.display = 'block';
+                    }
+                });
+            }
         });
     </script>
 </body>

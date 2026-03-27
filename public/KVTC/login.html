@@ -531,11 +531,7 @@
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('setNewPasswordContainer').style.display = 'block';
             });
-        } else if (selectedRole) {
-            console.log('User selected role:', selectedRole);
-        } else {
-            window.location.href = 'home.html';
-        }
+        } else if (selectedRole) { console.log("User selected role:", selectedRole); } // Redirect removed to allow password recovery directly.
 
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -702,7 +698,7 @@
                     }
 
                     const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-                        redirectTo: window.location.origin + '/pages/KVTC/login.html'
+                        redirectTo: window.location.origin + '/KVTC/login.html'
                     });
 
                     if (error) {
